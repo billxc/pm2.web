@@ -26,7 +26,7 @@ export default function ProcessMetricRow({ process, refetchInterval, showMetric 
   const memValue = showMetric ? getStat.data?.memory || 0 : 0;
 
   return (
-    <Group align="center" gap="xl" wrap="nowrap" style={{ flexGrow: 1 }}>
+    <Group align="center" gap="xl" wrap="wrap" miw={0} style={{ flexGrow: 1 }}>
       {process?.versioning?.url && <ProcessGitMetric versioning={process.versioning} />}
 
       <Tooltip label={`CPU: ${cpuValue.toFixed(1)}%`}>
@@ -63,7 +63,7 @@ export default function ProcessMetricRow({ process, refetchInterval, showMetric 
         </Stack>
       </Tooltip>
 
-      <Group gap={4}>
+      <Group gap={4} wrap="nowrap">
         <IconHistory size={16} color="gray" />
         <Text size="sm" fw={700}>
           {showMetric ? ms(getStat.data?.uptime || 0) : "-"}

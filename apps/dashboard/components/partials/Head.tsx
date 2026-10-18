@@ -1,4 +1,4 @@
-import { ActionIcon, AppShell, Box, Burger, Center, Flex, Group, Modal, rem, Stack } from "@mantine/core";
+import { ActionIcon, AppShell, Box, Burger, Center, Flex, Group, Modal, Stack } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IProcess } from "@pm2.web/typings";
 import { IconCircleFilled, IconDatabaseCog, IconFilterCog, IconLock, IconServerCog } from "@tabler/icons-react";
@@ -29,6 +29,11 @@ export function Head({ mobileOpened, toggleMobile }: { mobileOpened?: boolean; t
         <>
           <CustomMultiSelect
             leftSection={<IconServerCog />}
+            value={selectedItem.servers}
+            aria-label="Select Server"
+            withScrollArea
+            maxDropdownHeight={200}
+            comboboxProps={{ zIndex: 205 }}
             data={
               servers?.map((server) => ({
                 value: server._id,
@@ -49,6 +54,7 @@ export function Head({ mobileOpened, toggleMobile }: { mobileOpened?: boolean; t
           />
           <CustomMultiSelect
             leftSection={<IconDatabaseCog />}
+            aria-label="Select Process"
             data={
               servers
                 ?.map(
@@ -77,7 +83,7 @@ export function Head({ mobileOpened, toggleMobile }: { mobileOpened?: boolean; t
             withScrollArea
             maxDropdownHeight={200}
             style={{ zIndex: 204 }}
-            comboboxProps={{ position: "bottom", middlewares: { flip: false, shift: false } }}
+            comboboxProps={{ zIndex: 205 }}
             hidePickedOptions
           />
         </>
@@ -92,7 +98,16 @@ export function Head({ mobileOpened, toggleMobile }: { mobileOpened?: boolean; t
       </Modal>
       <Flex h="100%" justify="space-between" align="center" pr="xl">
         <Group h="100%" gap={0}>
-          {toggleMobile && <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" ml="md" />}
+          {toggleMobile && (
+            <Burger
+              opened={mobileOpened}
+              onClick={toggleMobile}
+              aria-label="Toggle navigation"
+              hiddenFrom="sm"
+              size="sm"
+              ml="md"
+            />
+          )}
           <Center w={80} h="100%">
             <Image
               alt="logo"
@@ -112,6 +127,7 @@ export function Head({ mobileOpened, toggleMobile }: { mobileOpened?: boolean; t
             variant="light"
             color="cyan"
             onClick={open}
+            aria-label="Server/Process Filter"
             size="lg"
             radius="md"
             display={{ base: "flex", lg: "none" }}
@@ -126,8 +142,8 @@ export function Head({ mobileOpened, toggleMobile }: { mobileOpened?: boolean; t
 
 function itemComponent(opt: IItem & { status: IProcess["status"] }) {
   return (
-    <Flex align="center">
-      <Box mr={10}>
+    <Flex align="center" miw={0}>
+      <Box mr={10} style={{ flexShrink: 0 }}>
         {opt.disabled ? (
           <IconLock size={14} />
         ) : (
@@ -139,7 +155,7 @@ function itemComponent(opt: IItem & { status: IProcess["status"] }) {
           />
         )}
       </Box>
-      <div>{opt.label}</div>
+      <div style={{ overflowWrap: "anywhere", minWidth: 0 }}>{opt.label}</div>
     </Flex>
   );
 }

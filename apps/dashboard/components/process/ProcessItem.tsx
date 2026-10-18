@@ -46,7 +46,7 @@ export default function ProcessItem({ process, setting }: ProcessItemProps) {
       <Stack>
         <Group justify="space-between" align="center" wrap="wrap" gap="md">
           <ProcessHeader statusColor={getStatusColor()} interpreter={process.type} name={process.name} />
-          <Group align="center" gap="md" wrap="wrap" justify="flex-end">
+          <Group align="center" gap="md" wrap="wrap" justify="flex-end" w={{ base: "100%", sm: "auto" }} miw={0}>
             <ProcessMetricRow
               process={process}
               refetchInterval={setting.polling.frontend}

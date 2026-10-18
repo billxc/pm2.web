@@ -32,10 +32,12 @@ export default function ProcessChart({ processId, refetchInterval }: ProcessChar
       ?.reverse() || [];
 
   return (
-    <Flex align={"center"} justify={"space-between"}>
+    <Flex direction={{ base: "column", sm: "row" }} align="center" justify="space-between">
       <AreaChart
-        w={"50%"}
+        w={{ base: "100%", sm: "50%" }}
+        miw={0}
         h={"150px"}
+        aria-label="Memory usage chart"
         pt={"0.5em"}
         pr="xs"
         data={chartData}
@@ -53,8 +55,10 @@ export default function ProcessChart({ processId, refetchInterval }: ProcessChar
         areaChartProps={{ syncId: "stats" }}
       />
       <AreaChart
-        w={"50%"}
+        w={{ base: "100%", sm: "50%" }}
+        miw={0}
         h={"150px"}
+        aria-label="CPU usage chart"
         pt={"0.5em"}
         pr="xs"
         data={chartData}

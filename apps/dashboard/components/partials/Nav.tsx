@@ -31,6 +31,7 @@ function NavbarLink({ icon: Icon, label, active, href, onClick }: NavbarLinkProp
         variant={active ? "light" : "subtle"}
         color={active ? theme.primaryColor : "gray"}
         onClick={onClick}
+        aria-label={label}
         size="xl"
         radius="md"
       >
@@ -66,14 +67,16 @@ const navLinks = [
   { icon: IconSettings, label: "Settings", href: "/settings" },
 ];
 
-export function Nav() {
+export function Nav({ onNavigate }: { onNavigate?: () => void }) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { data: session } = useSession();
   const router = useRouter();
 
   const links = navLinks
     .filter((link) => (link.onlyIf ? link.onlyIf(session) : true))
-    .map((link) => <NavbarLink {...link} key={link.label} active={router.pathname === link.href} />);
+    .map((link) => (
+      <NavbarLink {...link} key={link.label} active={router.pathname === link.href} onClick={onNavigate} />
+    ));
 
   return (
     <AppShell.Navbar p="md">

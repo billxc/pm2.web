@@ -27,6 +27,7 @@ export default function ProcessLog({ processId, refetchInterval }: ProcessAction
               fw={600}
               c={log.type == "success" ? "teal.6" : log.type == "error" ? "red.6" : "blue.4"}
               component="pre"
+              style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}
               my="0px"
             >
               {new Date(log.createdAt)?.toLocaleTimeString()} {log.message}

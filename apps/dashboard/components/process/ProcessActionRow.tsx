@@ -23,6 +23,7 @@ export default function ProcessAction({ processId, collapse }: ProcessActionProp
       <ActionIcon
         variant="light"
         color="blue"
+        aria-label="Restart process"
         radius="sm"
         size={"lg"}
         loading={processAction.isPending && processAction.variables.action === "RESTART"}
@@ -39,6 +40,7 @@ export default function ProcessAction({ processId, collapse }: ProcessActionProp
       <ActionIcon
         variant="light"
         color="orange"
+        aria-label="Stop process"
         radius="sm"
         size={"lg"}
         loading={processAction.isPending && processAction.variables.action === "STOP"}
@@ -55,6 +57,7 @@ export default function ProcessAction({ processId, collapse }: ProcessActionProp
       <ActionIcon
         variant="light"
         color="red"
+        aria-label="Delete process"
         radius="sm"
         size={"lg"}
         loading={processAction.isPending && processAction.variables.action === "DELETE"}
@@ -68,7 +71,14 @@ export default function ProcessAction({ processId, collapse }: ProcessActionProp
       >
         <IconTrash size="1.4rem" />
       </ActionIcon>
-      <ActionIcon variant="subtle" color="gray" radius="sm" size="lg" onClick={collapse}>
+      <ActionIcon
+        variant="subtle"
+        color="gray"
+        radius="sm"
+        size="lg"
+        onClick={collapse}
+        aria-label="Toggle process details"
+      >
         <IconSquareRoundedMinus size="1.2rem" />
       </ActionIcon>
     </Flex>
