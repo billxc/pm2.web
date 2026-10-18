@@ -1,6 +1,8 @@
 import { ActionIcon, AppShell, Stack, Tooltip, useMantineColorScheme, useMantineTheme } from "@mantine/core";
 import {
+  IconBell,
   IconGauge,
+  IconHistory,
   IconLayoutDashboard,
   IconLogout,
   IconMoonStars,
@@ -52,6 +54,8 @@ function NavbarLink({ icon: Icon, label, active, href, onClick }: NavbarLinkProp
 const navLinks = [
   { icon: IconGauge, label: "Overview", href: "/" },
   { icon: IconLayoutDashboard, label: "Process", href: "/process" },
+  { icon: IconHistory, label: "Operations", href: "/operations" },
+  { icon: IconBell, label: "Alerts", href: "/alerts" },
   {
     icon: IconUser,
     label: "User Administration",

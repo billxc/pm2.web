@@ -1,19 +1,27 @@
-import { Flex } from "@mantine/core";
+import { Anchor, Flex, Group } from "@mantine/core";
 import { ISetting } from "@pm2.web/typings";
 import { InferGetServerSidePropsType } from "next";
 import Head from "next/head";
+import Link from "next/link";
 
 import { SelectedProvider, useSelected } from "@/components/context/SelectedProvider";
 import { Dashboard } from "@/components/layouts/Dashboard";
+import ProcessConfigForm from "@/components/process/ProcessConfigForm";
 import ProcessItem from "@/components/process/ProcessItem";
 import { getServerSideHelpers } from "@/server/helpers";
 import { trpc } from "@/utils/trpc";
 
 function Process({ settings }: { settings: ISetting }) {
-  const { selectedProcesses } = useSelected();
+  const { selectedProcesses, servers } = useSelected();
 
   return (
     <Flex gap="xs" direction={"column"}>
+      <Group justify="space-between">
+        <ProcessConfigForm servers={servers} />
+        <Anchor component={Link} href="/operations">
+          Operations / save startup list
+        </Anchor>
+      </Group>
       {selectedProcesses?.map((process) => (
         <ProcessItem process={process} key={process._id} setting={settings} />
       ))}

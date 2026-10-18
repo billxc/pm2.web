@@ -13,14 +13,19 @@ pm2.web is a web-based application designed to monitor and manage processes runn
    ![Access Control](assets/user_adminstration.jpeg)
 5. **Settings**
    ![Settings](assets/settings.jpeg)
-6. **Alert Setup (Planned)**
+6. **Alerts (host offline / restart storms)**
 
 ## Fork additions
 
-This fork adds two self-hosting features:
+This fork adds self-hosting and day-to-day operations features:
 
 - **Process launch details**: expand a process card to see its reconstructed PM2 launch command, script, working directory, interpreter, OS PID, execution mode, and restart count. Update each host's backend to collect these fields. Commands use shell quoting on Linux and PowerShell quoting on Windows; they describe PM2 launch configuration, not every child process started by an application. Common credential arguments are redacted before storage, and full process environments are not collected. Review commands for unusual embedded secrets before sharing them.
 - **Optional anonymous owner access**: set `PM2_WEB_AUTH_DISABLED=true` in the dashboard environment only when a trusted network or authenticated reverse proxy provides the access boundary. Login remains enabled by default. This mode uses an existing owner account; create that account before enabling it. Every reachable visitor receives owner permissions, including process control. Do not expose this mode directly to the public Internet.
+
+- **Operations and configuration**: persistent queued/running/result history; explicit start/stop/restart/reload/delete; create and update local process configurations, with write-only environment patches and an explicit startup-list save. Updates do not delete/recreate processes and reject stopped processes rather than silently starting them. Running operations interrupted by an agent restart become `unknown` and are never replayed automatically; queued operations expire after ten minutes. Reload in fork mode does not guarantee zero downtime. These management endpoints run scripts as the PM2 service user; restrict access accordingly.
+- **Searchable logs**: filter by server, process, stream type, text and time, with cursor pagination and bounded NDJSON download. New log history is kept seven days; old embedded tails can be migrated, but previously rotated disk logs are not automatically imported.
+- **Historical monitoring**: one-hour, one-day and seven-day server-side bucketed charts. Overview values are means per reporting source, not fleet totals; missing history remains empty. Existing MongoDB time-series collections require an administrator to extend retention to seven days; older expired samples cannot be restored.
+- **Central alerts**: detect host heartbeat loss and observed restart storms, acknowledge incidents and resolve on recovery. A Node-runtime scanner runs in the central dashboard, including standalone deployments. Optional webhook delivery is disabled until explicitly configured; URLs are write-only and not exposed by the configuration API. No external notification account is required for in-panel alerts.
 
 Machine-specific configuration, credentials, deployment data, logs, and local operational scripts are not part of this fork. Keep real environment files outside version control.
 
@@ -64,10 +69,11 @@ Once pm2.web is installed and running, you can perform the following actions:
 
   - Configure settings such as the update interval, log rotation, and more.
 
-- **Alert Setup (Planned/On Demand)**:
+- **Alerts**:
 
-  - Configure alerts to receive notifications for specific actions.
-  - Define alert rules based on events like shutdown, restart, or kill actions.
+  - Detect missing host heartbeats and repeated process restarts from central observations.
+  - Review, acknowledge and resolve incidents in the dashboard.
+  - Configure thresholds and an optional webhook; delivery is off by default. Arbitrary rules and resource-threshold alerting are not implemented.
 
 - **User Registration**:
   - User can register at the `/login` page

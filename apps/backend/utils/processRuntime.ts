@@ -78,6 +78,8 @@ export default function getProcessRuntime(
     pid: item.pid,
     mode: env?.exec_mode,
     restarts: env?.restart_time,
+    exitCode: env?.exit_code,
+    unstableRestarts: env?.unstable_restarts,
     platform,
   };
 }

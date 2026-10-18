@@ -1,7 +1,9 @@
 import { AreaChart } from "@mantine/charts";
-import { Flex } from "@mantine/core";
+import { Flex, SegmentedControl, Stack, Text } from "@mantine/core";
+import { useState } from "react";
 
 import { formatBytes } from "@/utils/format";
+import { HISTORY_OPTIONS, historyCoverage, type HistoryRange, historyTime } from "@/utils/history";
 import { trpc } from "@/utils/trpc";
 
 interface ProcessChartProps {
@@ -11,67 +13,81 @@ interface ProcessChartProps {
 }
 
 export default function ProcessChart({ processId, refetchInterval }: ProcessChartProps) {
-  const getStats = trpc.process.getStats.useQuery(
-    {
-      processId,
-      range: "seconds",
-    },
-    {
-      refetchInterval,
-    },
+  const [range, setRange] = useState<HistoryRange>("hour");
+  const getStats = trpc.history.process.useQuery(
+    { processId, range },
+    { refetchInterval: Math.max(refetchInterval, range === "hour" ? 30_000 : 60_000) },
   );
-
   const chartData =
-    getStats?.data
-      ?.map((s) => ({
-        CPU: s.cpu,
-        RAM: s.memory,
-        HEAP_USED: s.heapUsed,
-        date: new Date(s.timestamp).toLocaleTimeString(),
-      }))
-      ?.reverse() || [];
+    getStats.data?.points.map((s) => ({
+      CPU: s.cpu,
+      RAM: s.memory,
+      HEAP_USED: s.heapUsed,
+      date: historyTime(s.timestamp),
+    })) || [];
+  const populated = getStats.data?.points.filter((point) => point.sources > 0).length ?? 0;
 
   return (
-    <Flex direction={{ base: "column", sm: "row" }} align="center" justify="space-between">
-      <AreaChart
-        w={{ base: "100%", sm: "50%" }}
-        miw={0}
-        h={"150px"}
-        aria-label="Memory usage chart"
-        pt={"0.5em"}
-        pr="xs"
-        data={chartData}
-        valueFormatter={(value) => formatBytes(value)}
-        dataKey="date"
-        type="default"
-        series={[
-          { name: "RAM", color: "yellow" },
-          { name: "HEAP_USED", color: "grape", label: "HEAP USED" },
-        ]}
-        withLegend
-        withGradient
-        withDots={false}
-        withXAxis={false}
-        areaChartProps={{ syncId: "stats" }}
+    <Stack gap="xs" w="100%" miw={0}>
+      <SegmentedControl
+        aria-label="Process history range"
+        size="xs"
+        fullWidth
+        data={HISTORY_OPTIONS}
+        value={range}
+        onChange={(value) => setRange(value as HistoryRange)}
       />
-      <AreaChart
-        w={{ base: "100%", sm: "50%" }}
-        miw={0}
-        h={"150px"}
-        aria-label="CPU usage chart"
-        pt={"0.5em"}
-        pr="xs"
-        data={chartData}
-        dataKey="date"
-        type="default"
-        yAxisProps={{ domain: [0, 100] }}
-        series={[{ name: "CPU", color: "indigo.6" }]}
-        withLegend
-        withGradient
-        withDots={false}
-        withXAxis={false}
-        areaChartProps={{ syncId: "stats" }}
-      />
-    </Flex>
+      <Text size="xs" c="dimmed" role="status">
+        {getStats.isError
+          ? "History could not be loaded."
+          : getStats.isPending
+            ? "Loading history…"
+            : historyCoverage(populated, getStats.data?.maxPoints ?? 0)}{" "}
+        Bucket means · UTC{getStats.data ? ` · ${getStats.data.bucketMs / 1000}s buckets` : ""}
+      </Text>
+      <Flex direction={{ base: "column", sm: "row" }} align="center" justify="space-between">
+        <AreaChart
+          w={{ base: "100%", sm: "50%" }}
+          miw={0}
+          h="150px"
+          aria-label="Historical memory usage chart"
+          pt="0.5em"
+          pr="xs"
+          data={chartData}
+          valueFormatter={formatBytes}
+          dataKey="date"
+          type="default"
+          series={[
+            { name: "RAM", color: "yellow" },
+            { name: "HEAP_USED", color: "grape", label: "HEAP USED" },
+          ]}
+          withLegend
+          withGradient
+          withDots={false}
+          withXAxis={false}
+          connectNulls={false}
+          areaChartProps={{ syncId: `history-${processId}` }}
+        />
+        <AreaChart
+          w={{ base: "100%", sm: "50%" }}
+          miw={0}
+          h="150px"
+          aria-label="Historical CPU usage chart"
+          pt="0.5em"
+          pr="xs"
+          data={chartData}
+          dataKey="date"
+          type="default"
+          valueFormatter={(value) => `${value.toFixed(1)}%`}
+          series={[{ name: "CPU", color: "indigo.6" }]}
+          withLegend
+          withGradient
+          withDots={false}
+          withXAxis={false}
+          connectNulls={false}
+          areaChartProps={{ syncId: `history-${processId}` }}
+        />
+      </Flex>
+    </Stack>
   );
 }

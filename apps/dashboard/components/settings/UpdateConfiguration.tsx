@@ -83,9 +83,9 @@ export default function UpdateConfiguration({ settings }: UpdateConfigurationPro
             </Stack>
             <Stack>
               <NumberInput
-                label="Log Rotation"
-                description="automatically rotate logs,to meet max logs length"
-                placeholder="Log Rotation"
+                label="Compatibility tail cache"
+                description="Entries per process in the legacy tail cache. Searchable log history is retained for seven days."
+                placeholder="Entries per process"
                 required
                 step={50}
                 {...globalConfiguration.getInputProps("logRotation")}

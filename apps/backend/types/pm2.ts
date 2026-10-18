@@ -9,6 +9,10 @@ interface Pm2Env extends Exclude<ProcessDescription["pm2_env"], undefined> {
   node_args?: string | string[];
   interpreter_args?: string | string[];
   exec_mode?: string;
+  exit_code?: number;
+  unstable_restarts?: number;
+  pmx_module?: boolean;
+  env?: Record<string, string | number | boolean | undefined>;
   versioning?: Partial<Versioning>;
   axm_monitor?: Partial<AxmMonitor>;
 }

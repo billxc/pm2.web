@@ -93,10 +93,9 @@ const processSchema = new mongoose.Schema(
       mode: String,
       restarts: Number,
       platform: String,
+      exitCode: Number,
+      unstableRestarts: Number,
     },
-    restartCount: Number,
-    toggleCount: Number,
-    deleteCount: Number,
   },
   { timestamps: true },
 );

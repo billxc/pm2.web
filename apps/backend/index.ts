@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 
 import LogCapture from "./handlers/captureLogs.js";
 import connectDb from "./handlers/connectDb.js";
-import onChange from "./handlers/onChange.js";
+import startOperationWorker from "./handlers/operations.js";
 import updateData from "./handlers/updateData.js";
 import { getCachedSettings } from "./utils/cachedSettings.js";
 
@@ -29,7 +29,7 @@ async function createInterval() {
 async function main() {
   logCapture.capture();
   const initialData = await updateData([], await getCachedSettings());
-  onChange(initialData.server._id);
+  startOperationWorker(initialData.server._id.toString());
   await createInterval();
 }
 

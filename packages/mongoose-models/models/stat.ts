@@ -29,9 +29,12 @@ const statSchema = new mongoose.Schema(
       metaField: "source",
       granularity: "seconds",
     },
-    expireAfterSeconds: 86_400, // 1 Day
+    expireAfterSeconds: 604_800, // 7 days; existing collections require an explicit admin collMod.
   },
 );
+
+statSchema.index({ "source.process": 1, timestamp: -1 });
+statSchema.index({ "source.server": 1, timestamp: -1 });
 
 export const statModel =
   (mongoose.models.Stat as StatModel) ??

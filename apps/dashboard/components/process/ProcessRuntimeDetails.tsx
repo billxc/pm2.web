@@ -10,6 +10,8 @@ export default function ProcessRuntimeDetails({ runtime }: { runtime?: IProcessR
     ["OS PID", runtime?.pid || "—"],
     ["Execution mode", runtime?.mode],
     ["Restarts", runtime?.restarts],
+    ["Unstable restarts", runtime?.unstableRestarts],
+    ["Last exit code", runtime?.exitCode],
   ];
 
   return (

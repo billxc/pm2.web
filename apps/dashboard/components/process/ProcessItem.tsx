@@ -2,8 +2,10 @@ import { Group, Paper, Stack, Transition } from "@mantine/core";
 import { IProcess, ISetting } from "@pm2.web/typings";
 import { useState } from "react";
 
+import OperationHistory from "./OperationHistory";
 import ProcessAction from "./ProcessActionRow";
 import ProcessChart from "./ProcessChart";
+import ProcessConfigForm from "./ProcessConfigForm";
 import ProcessHeader from "./ProcessHeader";
 import ProcessLog from "./ProcessLog";
 import ProcessMetricRow from "./ProcessMetricRow";
@@ -52,13 +54,15 @@ export default function ProcessItem({ process, setting }: ProcessItemProps) {
               refetchInterval={setting.polling.frontend}
               showMetric={process.status == "online"}
             />
-            <ProcessAction processId={process._id} collapse={() => setCollapsed(!collapsed)} />
+            <ProcessConfigForm process={process} />
+            <ProcessAction process={process} collapse={() => setCollapsed(!collapsed)} />
           </Group>
         </Group>
         <Transition transition="scale-y" duration={500} mounted={!collapsed}>
           {(styles) => (
             <div style={{ ...styles }}>
               <ProcessRuntimeDetails runtime={process.runtime} />
+              <OperationHistory processId={process._id} />
               <ProcessChart
                 processId={process._id}
                 refetchInterval={setting.polling.frontend}

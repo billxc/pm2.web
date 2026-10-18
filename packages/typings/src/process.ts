@@ -40,6 +40,8 @@ interface IProcessRuntime {
   mode?: string;
   restarts?: number;
   platform?: string;
+  exitCode?: number;
+  unstableRestarts?: number;
 }
 
 interface IProcess {
@@ -58,9 +60,6 @@ interface IProcess {
     branch?: string;
     unstaged?: boolean;
   };
-  toggleCount: number;
-  restartCount: number;
-  deleteCount: number;
   createdAt?: string;
   updatedAt: string;
 }

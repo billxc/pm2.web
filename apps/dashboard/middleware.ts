@@ -6,4 +6,4 @@ export default function authMiddleware(req: NextRequestWithAuth, event: NextFetc
   return middleware(req, event);
 }
 
-export const config = { matcher: ["/process", "/settings", "/", "/user"] };
+export const config = { matcher: ["/process", "/settings", "/", "/user", "/operations", "/alerts"] };

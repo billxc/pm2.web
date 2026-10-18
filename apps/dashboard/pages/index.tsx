@@ -1,17 +1,18 @@
-import { AreaChart, DonutChart } from "@mantine/charts";
-import { Card, Center, Flex, Group, Paper, SimpleGrid, Stack, Text, ThemeIcon, Title } from "@mantine/core";
+import { AreaChart } from "@mantine/charts";
+import { Group, Paper, SegmentedControl, SimpleGrid, Stack, Text, ThemeIcon, Title } from "@mantine/core";
 import { ISetting } from "@pm2.web/typings";
 import { IconActivity, IconClockHour4, IconCpu, IconDeviceSdCard, IconServer } from "@tabler/icons-react";
 import ms from "ms";
 import { InferGetServerSidePropsType } from "next";
 import Head from "next/head";
+import { useState } from "react";
 
 import { SelectedProvider, useSelected } from "@/components/context/SelectedProvider";
 import DashboardLog from "@/components/dashboard/DashboardLog";
 import { Dashboard } from "@/components/layouts/Dashboard";
-import { StatsRing } from "@/components/stats/StatsRing";
 import { getServerSideHelpers } from "@/server/helpers";
 import { formatBytes } from "@/utils/format";
+import { HISTORY_OPTIONS, historyCoverage, type HistoryRange, historyTime } from "@/utils/history";
 import { trpc } from "@/utils/trpc";
 
 const statChartProps = {
@@ -23,28 +24,28 @@ const statChartProps = {
   withYAxis: true,
   yAxisProps: { width: 55 },
   areaChartProps: { syncId: "stats" },
-  connectNulls: true,
-  curveType: "monotone" as any,
+  connectNulls: false,
+  curveType: "linear" as const,
 };
 
 function Home({ settings }: { settings: ISetting }) {
   const { selectedServers, selectedProcesses } = useSelected();
-  const { data } = trpc.server.getStats.useQuery(
-    {
-      processIds: selectedProcesses.map((p) => p._id),
-      serverIds: selectedServers.map((p) => p._id),
-      polling: settings.polling.backend / 1000,
-    },
-    {
-      refetchInterval: settings.polling.frontend,
-    },
+  const [range, setRange] = useState<HistoryRange>("hour");
+  const selection = {
+    processIds: selectedProcesses.map((p) => p._id),
+    serverIds: selectedServers.map((p) => p._id),
+  };
+  const history = trpc.history.overview.useQuery(
+    { ...selection, range },
+    { refetchInterval: Math.max(settings.polling.frontend, range === "hour" ? 30_000 : 60_000) },
   );
-
-  const chartData = data?.stats?.map((e) => ({ ...e, date: new Date(e._id).toLocaleTimeString() })) || [];
+  // Live summaries do not change with the selected historical window.
+  const latest = trpc.history.latest.useQuery(selection, { refetchInterval: settings.polling.frontend });
+  const chartData = history.data?.points.map((e) => ({ ...e, date: historyTime(e.timestamp) })) || [];
+  const populated =
+    history.data?.points.filter((point) => point.processSources > 0 || point.serverSources > 0).length ?? 0;
 
   const onlineCount = selectedProcesses.filter((p) => p.status == "online").length;
-  const stoppedCount = selectedProcesses.filter((p) => p.status == "stopped").length;
-  const offlineCount = selectedProcesses.filter((p) => p.status == "offline").length;
 
   return (
     <Stack gap="xl" flex={1}>
@@ -99,10 +100,10 @@ function Home({ settings }: { settings: ISetting }) {
           <Group justify="space-between" align="flex-start" wrap="nowrap">
             <div>
               <Text c="dimmed" tt="uppercase" fw={700} size="xs">
-                Server Uptime
+                Mean Server Uptime (live)
               </Text>
               <Text fw={900} size="2.5rem" style={{ whiteSpace: "nowrap" }}>
-                {ms(data?.serverUptime || 0)}
+                {latest.data?.server?.uptime == null ? "—" : ms(latest.data.server.uptime)}
               </Text>
             </div>
             <ThemeIcon color="violet" variant="light" size={48} radius="md">
@@ -115,10 +116,10 @@ function Home({ settings }: { settings: ISetting }) {
           <Group justify="space-between" align="flex-start" wrap="nowrap">
             <div>
               <Text c="dimmed" tt="uppercase" fw={700} size="xs">
-                Process Uptime
+                Mean Process Uptime (live)
               </Text>
               <Text fw={900} size="2.5rem" style={{ whiteSpace: "nowrap" }}>
-                {ms(data?.processUptime || 0)}
+                {latest.data?.process?.uptime == null ? "—" : ms(latest.data.process.uptime)}
               </Text>
             </div>
             <ThemeIcon color="grape" variant="light" size={48} radius="md">
@@ -128,11 +129,39 @@ function Home({ settings }: { settings: ISetting }) {
         </Paper>
       </SimpleGrid>
 
+      <Stack gap="xs" miw={0}>
+        <Group justify="space-between" wrap="wrap">
+          <Title order={3}>Resource History</Title>
+          <SegmentedControl
+            aria-label="Overview history range"
+            size="xs"
+            w={{ base: "100%", sm: "auto" }}
+            data={HISTORY_OPTIONS}
+            value={range}
+            onChange={(value) => setRange(value as HistoryRange)}
+          />
+        </Group>
+        <Text size="sm" c="dimmed">
+          Mean per reporting process / server, not fleet totals. Equal weight per source after averaging within each
+          bucket. UTC{history.data ? ` · ${history.data.bucketMs / 1000}s buckets` : ""}. Only authorized monitoring
+          sources are included.
+        </Text>
+        <Text size="xs" c="dimmed" role="status">
+          {history.isError
+            ? "History could not be loaded."
+            : history.isPending
+              ? "Loading history…"
+              : historyCoverage(populated, history.data?.maxPoints ?? 0)}
+          {history.data &&
+            ` Process buckets: ${history.data.points.filter((p) => p.processSources > 0).length}/${history.data.maxPoints}; server buckets: ${history.data.points.filter((p) => p.serverSources > 0).length}/${history.data.maxPoints}.`}
+        </Text>
+      </Stack>
+
       <SimpleGrid cols={{ base: 1, xl: 2 }} spacing="lg">
         <Paper p="xl" shadow="sm" radius="md">
           <Group justify="space-between" mb="lg">
             <Text fw={700} size="lg">
-              CPU Usage
+              Mean CPU Usage
             </Text>
             <ThemeIcon color="blue" variant="light" size="lg" radius="xl">
               <IconCpu size="1.2rem" />
@@ -145,8 +174,8 @@ function Home({ settings }: { settings: ISetting }) {
             type="default"
             valueFormatter={(value) => value.toFixed(1) + "%"}
             series={[
-              { name: "processCpu", color: "cyan.6", label: "Process CPU" },
-              { name: "serverCpu", color: "violet.6", label: "Server CPU" },
+              { name: "processCpu", color: "cyan.6", label: "Mean process CPU" },
+              { name: "serverCpu", color: "violet.6", label: "Mean server CPU" },
             ]}
           />
         </Paper>
@@ -154,7 +183,7 @@ function Home({ settings }: { settings: ISetting }) {
         <Paper p="xl" shadow="sm" radius="md">
           <Group justify="space-between" mb="lg">
             <Text fw={700} size="lg">
-              Memory Allocation
+              Mean Memory Usage
             </Text>
             <ThemeIcon color="indigo" variant="light" size="lg" radius="xl">
               <IconDeviceSdCard size="1.2rem" />
@@ -167,8 +196,8 @@ function Home({ settings }: { settings: ISetting }) {
             type="default"
             valueFormatter={(value) => formatBytes(value)}
             series={[
-              { name: "processRam", color: "teal.6", label: "Process RAM" },
-              { name: "serverRam", color: "indigo.6", label: "Server RAM" },
+              { name: "processRam", color: "teal.6", label: "Mean process RAM" },
+              { name: "serverRam", color: "indigo.6", label: "Mean server RAM" },
             ]}
           />
         </Paper>
