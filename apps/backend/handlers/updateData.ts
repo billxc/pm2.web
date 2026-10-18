@@ -83,18 +83,28 @@ export default async function updateData(
     // Persist only censored log fields, never process runtime/env or PM2 packets.
     // Reuse the embedded _id so the one-time compatibility backfill is idempotent.
     if (logs.length > 0) {
-      await logEntryModel.insertMany(
+      await logEntryModel.bulkWrite(
         logs.map((log) => ({
-          _id: log._id,
-          source: { server: currentServer._id, process: processExists._id },
-          type:
-            log.type === "success"
-              ? "stdout"
-              : log.type === "error"
-                ? "error"
-                : "event",
-          message: log.message,
-          timestamp: log.createdAt,
+          updateOne: {
+            filter: { _id: log._id.toString() },
+            update: {
+              $setOnInsert: {
+                source: {
+                  server: currentServer._id,
+                  process: processExists._id,
+                },
+                type:
+                  log.type === "success"
+                    ? "stdout"
+                    : log.type === "error"
+                      ? "error"
+                      : "event",
+                message: log.message,
+                timestamp: log.createdAt,
+              },
+            },
+            upsert: true,
+          },
         })),
       );
     }

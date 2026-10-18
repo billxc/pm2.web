@@ -299,8 +299,13 @@ test("new process logs and stats share its first ID; queue is untouched and only
         },
       },
       logEntryModel: {
-        async insertMany(value) {
-          persisted.push(...value);
+        async bulkWrite(operations) {
+          for (const { updateOne } of operations) {
+            assert.equal(updateOne.upsert, true);
+            assert.ok(updateOne.filter._id);
+            assert.deepEqual(Object.keys(updateOne.update), ["$setOnInsert"]);
+            persisted.push({ _id: updateOne.filter._id, ...updateOne.update.$setOnInsert });
+          }
         },
       },
     },
