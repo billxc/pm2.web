@@ -7,6 +7,7 @@ import ProcessChart from "./ProcessChart";
 import ProcessHeader from "./ProcessHeader";
 import ProcessLog from "./ProcessLog";
 import ProcessMetricRow from "./ProcessMetricRow";
+import ProcessRuntimeDetails from "./ProcessRuntimeDetails";
 
 interface ProcessItemProps {
   process: IProcess;
@@ -57,6 +58,7 @@ export default function ProcessItem({ process, setting }: ProcessItemProps) {
         <Transition transition="scale-y" duration={500} mounted={!collapsed}>
           {(styles) => (
             <div style={{ ...styles }}>
+              <ProcessRuntimeDetails runtime={process.runtime} />
               <ProcessChart
                 processId={process._id}
                 refetchInterval={setting.polling.frontend}

@@ -225,6 +225,9 @@ const SignInError = ({ error }: { error: string }) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  if (process.env.PM2_WEB_AUTH_DISABLED === "true") {
+    return { redirect: { destination: "/", permanent: false } };
+  }
   const csrfToken = await getCsrfToken(context);
   const helpers = await getServerSideHelpers();
 

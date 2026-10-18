@@ -6,6 +6,7 @@ import superjson from "superjson";
 import connectDB from "@/middleware/mongodb";
 import { defaultSettings } from "@/utils/constants";
 
+import { getAnonymousOwnerSession } from "./anonymous-session";
 import { appRouter } from "./routers/_app";
 
 export const getServerSideHelpers = async () => {
@@ -13,7 +14,7 @@ export const getServerSideHelpers = async () => {
   return createServerSideHelpers({
     router: appRouter,
     ctx: {
-      session: null,
+      session: await getAnonymousOwnerSession(),
     },
     transformer: superjson,
   });

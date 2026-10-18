@@ -89,7 +89,7 @@ export function Nav() {
             label="Toggle Theme"
             onClick={() => toggleColorScheme()}
           />
-          <NavbarLink icon={IconLogout} label="Logout" onClick={() => signOut()} />
+          {!session?.authDisabled && <NavbarLink icon={IconLogout} label="Logout" onClick={() => signOut()} />}
         </Stack>
       </AppShell.Section>
     </AppShell.Navbar>

@@ -49,6 +49,7 @@ export default async function updateData(
         name: process.name,
         status: process.status,
         versioning: process.versioning,
+        runtime: process.runtime,
         $push: {
           logs: {
             $each: logs,
@@ -66,6 +67,7 @@ export default async function updateData(
         logs: logs,
         status: process.status,
         versioning: process.versioning,
+        runtime: process.runtime,
         restartCount: 0,
         deleteCount: 0,
         toggleCount: 0,

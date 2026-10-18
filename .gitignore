@@ -3,12 +3,12 @@ node_modules
 .pnp
 .pnp.js
 
-# Local env files
+# Local env files (keep only the upstream examples and non-secret test defaults)
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+!.env.production
+!.env.test
 
 # Testing
 coverage
@@ -34,6 +34,14 @@ dist
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Local deployment data and tooling
+.local/
+private/
+backups/
+*.key
+*.p12
+*.pfx
 
 # Misc
 .DS_Store

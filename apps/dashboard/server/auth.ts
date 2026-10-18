@@ -4,8 +4,11 @@ import { DefaultSession, getServerSession } from "next-auth";
 
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
+import { getAnonymousOwnerSession } from "./anonymous-session";
+
 declare module "next-auth" {
   interface Session {
+    authDisabled?: boolean;
     user?: {
       id: string;
       acl?: IAcl;
@@ -14,9 +17,9 @@ declare module "next-auth" {
   }
 }
 
-export const getServerAuthSession = (ctx: {
+export const getServerAuthSession = async (ctx: {
   req: GetServerSidePropsContext["req"];
   res: GetServerSidePropsContext["res"];
 }) => {
-  return getServerSession(ctx.req, ctx.res, authOptions);
+  return (await getAnonymousOwnerSession()) ?? getServerSession(ctx.req, ctx.res, authOptions);
 };

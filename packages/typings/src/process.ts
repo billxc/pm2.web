@@ -7,7 +7,7 @@ interface ILog {
   _id: string;
 }
 
-const PROCESS_TYPES = <const> [
+const PROCESS_TYPES = <const>[
   "node",
   "python",
   "ruby",
@@ -18,9 +18,9 @@ const PROCESS_TYPES = <const> [
   "shell",
   "java",
   "other",
-]
+];
 
-type IProcessType = typeof PROCESS_TYPES[number];
+type IProcessType = (typeof PROCESS_TYPES)[number];
 
 type IProcessStatus =
   | "online"
@@ -31,6 +31,17 @@ type IProcessStatus =
   | "offline"
   | "one-launch-status";
 
+interface IProcessRuntime {
+  command?: string;
+  script?: string;
+  cwd?: string;
+  interpreter?: string;
+  pid?: number;
+  mode?: string;
+  restarts?: number;
+  platform?: string;
+}
+
 interface IProcess {
   _id: string;
   pm_id: number;
@@ -39,6 +50,7 @@ interface IProcess {
   type: IProcessType;
   logs?: ILog[];
   status: IProcessStatus;
+  runtime?: IProcessRuntime;
   versioning: {
     url?: string;
     revision?: string;
@@ -60,10 +72,9 @@ export type {
   ILogType,
   IProcessType,
   IProcessStatus,
+  IProcessRuntime,
   IProcess,
-  IProcessModel
+  IProcessModel,
 };
 
-export {
-  PROCESS_TYPES
-}
+export { PROCESS_TYPES };

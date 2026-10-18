@@ -4,6 +4,7 @@ import pm2 from "pm2";
 
 import { IProcessInfo } from "../types/info";
 import { Pm2ProcessDescription } from "../types/pm2";
+import getProcessRuntime from "./processRuntime.js";
 
 const getProcessInfo = async (): Promise<IProcessInfo[]> => {
   const pm2List = await new Promise<Pm2ProcessDescription[]>(
@@ -32,6 +33,7 @@ const getProcessInfo = async (): Promise<IProcessInfo[]> => {
       return {
         name: item.name || item.pm_id,
         pm_id: item.pm_id,
+        runtime: getProcessRuntime(item),
         stats: {
           cpu: item?.monit?.cpu || 0,
           memory: item?.monit?.memory || 0,

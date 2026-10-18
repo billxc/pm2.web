@@ -1,10 +1,12 @@
 import { userModel } from "@pm2.web/mongoose-models";
+import type { NextApiRequest, NextApiResponse } from "next";
 import NextAuth from "next-auth";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider, { GithubEmail } from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
+import { getAnonymousOwnerSession } from "@/server/anonymous-session";
 import { fetchSettings } from "@/server/helpers";
 
 import connectDB from "../../../middleware/mongodb";
@@ -210,4 +212,15 @@ export const authOptions = {
   },
 };
 
-export default NextAuth(authOptions);
+const authHandler = NextAuth(authOptions);
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === "GET" && req.query.nextauth?.[0] === "session") {
+    const session = await getAnonymousOwnerSession();
+    if (session) {
+      res.setHeader("Cache-Control", "no-store");
+      return res.status(200).json(session);
+    }
+  }
+  return authHandler(req, res);
+}

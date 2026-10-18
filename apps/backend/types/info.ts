@@ -1,8 +1,9 @@
-import { IProcessStatus } from "@pm2.web/typings";
+import { IProcessRuntime, IProcessStatus } from "@pm2.web/typings";
 
 interface IProcessInfo {
   name: string;
   pm_id: number;
+  runtime: IProcessRuntime;
   stats: {
     cpu: number;
     memory: number;

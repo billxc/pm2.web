@@ -5,6 +5,10 @@ export interface Pm2ProcessDescription extends ProcessDescription {
 }
 
 interface Pm2Env extends Exclude<ProcessDescription["pm2_env"], undefined> {
+  args?: string | string[];
+  node_args?: string | string[];
+  interpreter_args?: string | string[];
+  exec_mode?: string;
   versioning?: Partial<Versioning>;
   axm_monitor?: Partial<AxmMonitor>;
 }
