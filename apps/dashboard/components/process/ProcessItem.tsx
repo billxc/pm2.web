@@ -15,9 +15,10 @@ import ProcessRuntimeDetails from "./ProcessRuntimeDetails";
 interface ProcessItemProps {
   process: IProcess;
   setting: ISetting;
+  serverName: string;
 }
 
-export default function ProcessItem({ process, setting }: ProcessItemProps) {
+export default function ProcessItem({ process, setting, serverName }: ProcessItemProps) {
   const [collapsed, setCollapsed] = useState(true);
   const detailsId = useId();
 
@@ -36,8 +37,16 @@ export default function ProcessItem({ process, setting }: ProcessItemProps) {
   }
 
   return (
-    <Paper key={process._id} className={classes.card}>
+    <Paper
+      component="section"
+      aria-label={`Process: ${process.name} on ${serverName}`}
+      key={process._id}
+      className={classes.card}
+    >
       <Stack>
+        <Text size="xs" c="dimmed">
+          {serverName}
+        </Text>
         <ProcessHeader
           statusColor={getStatusColor()}
           status={process.status}

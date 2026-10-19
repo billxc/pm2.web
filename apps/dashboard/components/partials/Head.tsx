@@ -118,20 +118,22 @@ export function Head({ mobileOpened, toggleMobile }: { mobileOpened?: boolean; t
               <span className={`${classes.liveDot} ${isFresh ? "" : classes.delayedDot}`} />
               {isFresh ? "Live data" : "Updates delayed"}
             </span>
-            <Button
-              variant="light"
-              leftSection={<IconFilterCog size={18} />}
-              onClick={open}
-              aria-label="Server/Process Filter"
-              size="md"
-            >
-              Filters{" "}
-              {selectionCount > 0 && (
-                <Badge size="sm" variant="filled" ml={8}>
-                  {selectionCount}
-                </Badge>
-              )}
-            </Button>
+            {router.pathname !== "/process" && (
+              <Button
+                variant="light"
+                leftSection={<IconFilterCog size={18} />}
+                onClick={open}
+                aria-label="Server/Process Filter"
+                size="md"
+              >
+                Filters{" "}
+                {selectionCount > 0 && (
+                  <Badge size="sm" variant="filled" ml={8}>
+                    {selectionCount}
+                  </Badge>
+                )}
+              </Button>
+            )}
           </div>
         )}
       </div>

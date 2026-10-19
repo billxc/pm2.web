@@ -1,30 +1,96 @@
-import { Anchor, Flex, Group } from "@mantine/core";
+import { ActionIcon, Anchor, Button, Checkbox, Flex, Group, Paper, Stack, Text, TextInput } from "@mantine/core";
 import { ISetting } from "@pm2.web/typings";
+import { IconSearch, IconX } from "@tabler/icons-react";
 import { InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { useState } from "react";
 
 import { SelectedProvider, useSelected } from "@/components/context/SelectedProvider";
 import { Dashboard } from "@/components/layouts/Dashboard";
 import ProcessConfigForm from "@/components/process/ProcessConfigForm";
 import ProcessItem from "@/components/process/ProcessItem";
 import { getServerSideHelpers } from "@/server/helpers";
+import { matchesProcessName } from "@/utils/process-filters";
 import { trpc } from "@/utils/trpc";
+
+import classes from "./ProcessFilters.module.css";
 
 function Process({ settings }: { settings: ISetting }) {
   const { selectedProcesses, servers } = useSelected();
+  const [excludedServers, setExcludedServers] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
+  const checkedServers = servers.filter((server) => !excludedServers.includes(server._id)).map((server) => server._id);
+  const processes = selectedProcesses.filter(
+    (process) => checkedServers.includes(process.server) && matchesProcessName(process.name, search),
+  );
+  const reset = () => {
+    setExcludedServers([]);
+    setSearch("");
+  };
 
   return (
-    <Flex gap="xs" direction={"column"}>
+    <Flex gap="md" direction="column">
+      <Paper className={classes.filters}>
+        <Stack gap="md">
+          <Checkbox.Group
+            label="Machines"
+            value={checkedServers}
+            onChange={(ids) =>
+              setExcludedServers(servers.filter((server) => !ids.includes(server._id)).map((server) => server._id))
+            }
+          >
+            <Group gap="sm" mt="xs">
+              {servers.map((server) => (
+                <Checkbox key={server._id} value={server._id} label={server.name} className={classes.machine} />
+              ))}
+            </Group>
+          </Checkbox.Group>
+          <TextInput
+            label="Search processes"
+            placeholder="Type a process name…"
+            description="Instant name matching, ignoring case. org also matches orange."
+            leftSection={<IconSearch size={18} />}
+            value={search}
+            onChange={(event) => setSearch(event.currentTarget.value)}
+            rightSection={
+              search && (
+                <ActionIcon variant="subtle" aria-label="Clear process search" onClick={() => setSearch("")}>
+                  <IconX size={16} />
+                </ActionIcon>
+              )
+            }
+            size="md"
+          />
+          <Group justify="space-between">
+            <Text size="sm" c="dimmed" role="status">
+              {processes.length} of {selectedProcesses.length} processes
+            </Text>
+            <Button variant="subtle" onClick={reset} disabled={!search && excludedServers.length === 0}>
+              Reset filters
+            </Button>
+          </Group>
+        </Stack>
+      </Paper>
       <Group justify="space-between">
         <ProcessConfigForm servers={servers} />
         <Anchor component={Link} href="/operations">
           Operations / save startup list
         </Anchor>
       </Group>
-      {selectedProcesses?.map((process) => (
-        <ProcessItem process={process} key={process._id} setting={settings} />
+      {processes.map((process) => (
+        <ProcessItem
+          process={process}
+          key={process._id}
+          setting={settings}
+          serverName={servers.find((server) => server._id === process.server)!.name}
+        />
       ))}
+      {processes.length === 0 && (
+        <Paper className={classes.filters}>
+          <Text c="dimmed">No processes match these filters.</Text>
+        </Paper>
+      )}
     </Flex>
   );
 }

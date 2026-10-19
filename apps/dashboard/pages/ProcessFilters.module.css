@@ -1,0 +1,29 @@
+.filters {
+  min-width: 0;
+  padding: 18px;
+  color: var(--ops-text);
+  background: var(--ops-surface);
+  border: 1px solid var(--ops-border);
+  border-radius: 14px;
+}
+.machine {
+  max-width: 100%;
+}
+.machine :global(.mantine-Checkbox-body) {
+  align-items: center;
+  min-height: 44px;
+}
+.machine :global(.mantine-Checkbox-label) {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+}
+.filters :global(.mantine-Button-root),
+.filters :global(.mantine-TextInput-input),
+.filters :global(.mantine-ActionIcon-root) {
+  min-height: 44px;
+}
+.filters :global(.mantine-ActionIcon-root) {
+  min-width: 44px;
+}
