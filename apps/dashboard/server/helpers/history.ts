@@ -81,6 +81,7 @@ export function latestPipeline(
   sourceField: "source.process" | "source.server",
   now: number,
 ): PipelineStage[] {
+  const isHost = sourceField === "source.server";
   return [
     { $match: { ...sourceMatch, timestamp: { $gte: new Date(now - 300_000), $lte: new Date(now) } } },
     { $sort: { timestamp: -1 } },
@@ -89,6 +90,7 @@ export function latestPipeline(
         _id: `$${sourceField}`,
         cpu: { $first: "$cpu" },
         memory: { $first: "$memory" },
+        ...(isHost && { memoryMax: { $first: "$memoryMax" } }),
         uptime: { $first: "$uptime" },
         timestamp: { $first: "$timestamp" },
       },
@@ -98,12 +100,13 @@ export function latestPipeline(
         _id: null,
         cpu: { $avg: "$cpu" },
         memory: { $avg: "$memory" },
+        ...(isHost && { memoryMax: { $avg: "$memoryMax" } }),
         uptime: { $avg: "$uptime" },
         timestamp: { $max: "$timestamp" },
         sources: { $sum: 1 },
       },
     },
-    { $project: { _id: 0, cpu: 1, memory: 1, uptime: 1, timestamp: 1, sources: 1 } },
+    { $project: { _id: 0, cpu: 1, memory: 1, ...(isHost && { memoryMax: 1 }), uptime: 1, timestamp: 1, sources: 1 } },
   ];
 }
 

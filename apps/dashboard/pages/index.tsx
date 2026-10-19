@@ -9,6 +9,7 @@ import { useState } from "react";
 
 import { SelectedProvider, useSelected } from "@/components/context/SelectedProvider";
 import DashboardLog from "@/components/dashboard/DashboardLog";
+import ServerOverview from "@/components/dashboard/ServerOverview";
 import { Dashboard } from "@/components/layouts/Dashboard";
 import styles from "@/pages/PageVisuals.module.css";
 import { getServerSideHelpers } from "@/server/helpers";
@@ -29,7 +30,7 @@ const statChartProps = {
   curveType: "linear" as const,
 };
 
-function Home({ settings }: { settings: ISetting }) {
+function FleetAverages({ settings }: { settings: ISetting }) {
   const { selectedServers, selectedProcesses } = useSelected();
   const [range, setRange] = useState<HistoryRange>("hour");
   const selection = {
@@ -187,6 +188,35 @@ function Home({ settings }: { settings: ISetting }) {
         </Text>
         <DashboardLog refetchInterval={settings.polling.frontend} processIds={selectedProcesses.map((p) => p._id)} />
       </Paper>
+    </Stack>
+  );
+}
+
+function Home({ settings }: { settings: ISetting }) {
+  const [view, setView] = useState("servers");
+  return (
+    <Stack gap="lg" miw={0}>
+      <SegmentedControl
+        aria-label="Overview view"
+        data={[
+          { value: "servers", label: "By server" },
+          { value: "averages", label: "Averages (optional)" },
+        ]}
+        value={view}
+        onChange={setView}
+        w={{ base: "100%", sm: "auto" }}
+        style={{ alignSelf: "flex-start" }}
+      />
+      {view === "servers" ? (
+        <ServerOverview settings={settings} />
+      ) : (
+        <>
+          <Text size="sm" c="dimmed">
+            Optional selection averages — these are not the specifications of any individual machine.
+          </Text>
+          <FleetAverages settings={settings} />
+        </>
+      )}
     </Stack>
   );
 }

@@ -1,0 +1,55 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--ops-border);
+  border-radius: 18px;
+  background: var(--ops-surface);
+}
+.name {
+  overflow-wrap: anywhere;
+  color: var(--ops-text);
+}
+.metrics {
+  display: grid;
+  gap: 18px;
+  margin: 22px 0;
+}
+.value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  color: var(--ops-text);
+}
+.footer {
+  padding-top: 14px;
+  border-top: 1px solid var(--ops-border);
+}
+.history {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ops-border);
+  min-width: 0;
+}
+.charts {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+@media (max-width: 85em) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 47.99em) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .card {
+    padding: 16px;
+  }
+}

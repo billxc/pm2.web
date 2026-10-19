@@ -1,10 +1,27 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { HISTORY_RANGES, historyPipeline, historyPoints, historyWindow } from "../server/helpers/history.ts";
+import {
+  HISTORY_RANGES,
+  historyPipeline,
+  historyPoints,
+  historyWindow,
+  latestPipeline,
+} from "../server/helpers/history.ts";
 import { historyCoverage, historyTime } from "../utils/history.ts";
 
 const now = Date.parse("2026-06-18T12:34:56.789Z");
+
+test("host capacity is returned only for authorized host-source queries, not process sources", () => {
+  const host = latestPipeline({ "source.server": "server" }, "source.server", now);
+  assert.deepEqual(host[2].$group.memoryMax, { $first: "$memoryMax" });
+  assert.deepEqual(host[3].$group.memoryMax, { $avg: "$memoryMax" });
+  assert.equal(host[4].$project.memoryMax, 1);
+  const process = latestPipeline({ "source.process": "process" }, "source.process", now);
+  assert.equal(process[2].$group.memoryMax, undefined);
+  assert.equal(process[3].$group.memoryMax, undefined);
+  assert.equal(process[4].$project.memoryMax, undefined);
+});
 
 test("fixed hour/day/week bucket mapping and bounded UTC slots", () => {
   const expected = {

@@ -26,6 +26,7 @@ const canMonitor = (user: IUser, serverId: string, processId = "") =>
 interface LatestAggregate {
   cpu: number | null;
   memory: number | null;
+  memoryMax?: number | null;
   uptime: number | null;
   timestamp: Date;
   sources: number;
