@@ -19,7 +19,7 @@ pm2.web is a web-based application designed to monitor and manage processes runn
 
 This fork adds self-hosting and day-to-day operations features:
 
-- **Instant process filters**: inline machine checkboxes and a client-side process-name search, with no Apply step. Matching ignores case and allows ordered partial names (`org` matches `aorg` and `orange`). Filters survive live data refreshes; clearing every machine shows an empty list.
+- **Instant process filters**: inline machine checkboxes and a client-side process-name search, with no Apply step. Matching ignores case and uses contiguous substrings (`org` matches `aorg`, not `orange`). Spaces separate literal chunks that must appear in order, allowing gaps (`w e b`, or `web dash`). Filters survive live data refreshes; clearing every machine shows an empty list.
 - **Host-first overview**: individual machine status, CPU, RAM used/total, uptime and visible PM2 process counts are the default. Each host has its own expandable history. Fleet averages are an explicitly selected optional view and are not queried in the background by the default view. Host capacity and metrics require server-level monitoring permission.
 
 - **Process launch details**: expand a process card to see its reconstructed PM2 launch command, script, working directory, interpreter, OS PID, execution mode, and restart count. Update each host's backend to collect these fields. Commands use shell quoting on Linux and PowerShell quoting on Windows; they describe PM2 launch configuration, not every child process started by an application. Common credential arguments are redacted before storage, and full process environments are not collected. Review commands for unusual embedded secrets before sharing them.

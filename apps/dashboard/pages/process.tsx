@@ -49,7 +49,7 @@ function Process({ settings }: { settings: ISetting }) {
           <TextInput
             label="Search processes"
             placeholder="Type a process name…"
-            description="Instant name matching, ignoring case. org also matches orange."
+            description="Ignores case. web matches literally; w e b matches letters in order, with gaps."
             leftSection={<IconSearch size={18} />}
             value={search}
             onChange={(event) => setSearch(event.currentTarget.value)}
