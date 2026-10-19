@@ -1,8 +1,9 @@
-import { Group, Paper, Stack, Transition } from "@mantine/core";
+import { Paper, Stack, Text, Transition } from "@mantine/core";
 import { IProcess, ISetting } from "@pm2.web/typings";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import OperationHistory from "./OperationHistory";
+import classes from "./Process.module.css";
 import ProcessAction from "./ProcessActionRow";
 import ProcessChart from "./ProcessChart";
 import ProcessConfigForm from "./ProcessConfigForm";
@@ -18,6 +19,7 @@ interface ProcessItemProps {
 
 export default function ProcessItem({ process, setting }: ProcessItemProps) {
   const [collapsed, setCollapsed] = useState(true);
+  const detailsId = useId();
 
   function getStatusColor() {
     switch (process.status) {
@@ -34,33 +36,36 @@ export default function ProcessItem({ process, setting }: ProcessItemProps) {
   }
 
   return (
-    <Paper
-      key={process._id}
-      radius="md"
-      p="md"
-      shadow="sm"
-      bg="var(--mantine-color-body)"
-      style={{
-        transition: "box-shadow 0.2s ease, transform 0.2s ease",
-        border: "1px solid var(--mantine-color-default-border)",
-      }}
-    >
+    <Paper key={process._id} className={classes.card}>
       <Stack>
-        <Group justify="space-between" align="center" wrap="wrap" gap="md">
-          <ProcessHeader statusColor={getStatusColor()} interpreter={process.type} name={process.name} />
-          <Group align="center" gap="md" wrap="wrap" justify="flex-end" w={{ base: "100%", sm: "auto" }} miw={0}>
-            <ProcessMetricRow
-              process={process}
-              refetchInterval={setting.polling.frontend}
-              showMetric={process.status == "online"}
-            />
-            <ProcessConfigForm process={process} />
-            <ProcessAction process={process} collapse={() => setCollapsed(!collapsed)} />
-          </Group>
-        </Group>
-        <Transition transition="scale-y" duration={500} mounted={!collapsed}>
+        <ProcessHeader
+          statusColor={getStatusColor()}
+          status={process.status}
+          interpreter={process.type}
+          name={process.name}
+        />
+        <div className={classes.summary}>
+          <ProcessMetricRow
+            process={process}
+            refetchInterval={setting.polling.frontend}
+            showMetric={process.status == "online"}
+          />
+          <ProcessAction
+            process={process}
+            collapse={() => setCollapsed(!collapsed)}
+            expanded={!collapsed}
+            detailsId={detailsId}
+          />
+        </div>
+        <Transition transition="fade" duration={180} mounted={!collapsed}>
           {(styles) => (
-            <div style={{ ...styles }}>
+            <div style={styles} className={classes.expanded} id={detailsId}>
+              <div className={classes.configuration}>
+                <Text size="sm" fw={600}>
+                  Process details
+                </Text>
+                <ProcessConfigForm process={process} />
+              </div>
               <ProcessRuntimeDetails runtime={process.runtime} />
               <OperationHistory processId={process._id} />
               <ProcessChart

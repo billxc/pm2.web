@@ -203,7 +203,7 @@ export const CustomMultiSelect = factory<CustomMultiSelectFactory>((_props: any)
     .filter((opt) => !_value.includes(opt?.value))
     .map((opt) => {
       return (
-        <Combobox.Option value={opt.value} key={opt.value} active={_value.includes(opt.value)}>
+        <Combobox.Option value={opt.value} key={opt.value} active={_value.includes(opt.value)} disabled={opt.disabled}>
           {itemComponent ? itemComponent(opt) : opt.label}
         </Combobox.Option>
       );
@@ -300,10 +300,10 @@ export const CustomMultiSelect = factory<CustomMultiSelectFactory>((_props: any)
               <Combobox.EventsTarget>
                 <PillsInput.Field
                   {...(rest as any)}
-                  hidden={_value.length > 0}
+                  hidden={!searchable && _value.length > 0}
                   ref={ref}
                   id={_id}
-                  placeholder={placeholder}
+                  placeholder={_value.length > 0 ? undefined : placeholder}
                   type={!searchable && !placeholder ? "hidden" : "visible"}
                   {...(getStyles("inputField") as any)}
                   unstyled={unstyled}

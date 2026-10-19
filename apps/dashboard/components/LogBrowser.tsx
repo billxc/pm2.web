@@ -1,7 +1,9 @@
-import { Alert, Badge, Button, Card, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
+import { Alert, Badge, Button, Card, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { FormEvent, useState } from "react";
 
 import { trpc } from "@/utils/trpc";
+
+import classes from "./process/Process.module.css";
 
 type LogType = "stdout" | "error" | "event";
 type Cursor = { timestamp: Date; id: string };
@@ -64,14 +66,14 @@ export default function LogBrowser({ processId, processIds, refetchInterval }: P
   };
 
   return (
-    <Card withBorder radius="md" p="sm" style={{ minWidth: 0 }}>
+    <Card className={classes.logs}>
       <Stack gap="sm">
         <Group justify="space-between">
           <Text fw={600}>Logs</Text>
           <Badge color={page === 1 ? "teal" : "gray"}>{page === 1 ? "Live · page 1" : `History · page ${page}`}</Badge>
         </Group>
         <form onSubmit={apply}>
-          <Stack gap="xs">
+          <div className={classes.logForm}>
             <TextInput
               label="Literal text search"
               placeholder="Search messages (not regex)"
@@ -79,7 +81,7 @@ export default function LogBrowser({ processId, processIds, refetchInterval }: P
               value={draft.text}
               onChange={(event) => update("text", event.currentTarget.value)}
             />
-            <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xs">
+            <div className={classes.logFilters}>
               <Select
                 label="Type"
                 data={[
@@ -104,9 +106,9 @@ export default function LogBrowser({ processId, processIds, refetchInterval }: P
                 value={draft.end}
                 onChange={(event) => update("end", event.currentTarget.value)}
               />
-            </SimpleGrid>
+            </div>
             {!processId && (
-              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xs">
+              <div className={classes.logIds}>
                 <TextInput
                   label="Server ID (optional)"
                   placeholder="24-character ID"
@@ -119,17 +121,17 @@ export default function LogBrowser({ processId, processIds, refetchInterval }: P
                   value={draft.processId}
                   onChange={(event) => update("processId", event.currentTarget.value.trim())}
                 />
-              </SimpleGrid>
+              </div>
             )}
-            <Group>
+            <div className={classes.logActions}>
               <Button type="submit" size="xs">
                 Apply filters
               </Button>
               <Button size="xs" variant="light" onClick={download} loading={downloading}>
                 Download latest matches
               </Button>
-            </Group>
-          </Stack>
+            </div>
+          </div>
         </form>
         <Text size="xs" c="dimmed">
           Retention: 7 days from collection; disk history is not imported. Download: newest 5,000 matches, max 5 MiB
@@ -150,7 +152,16 @@ export default function LogBrowser({ processId, processIds, refetchInterval }: P
             {logs.error.message}
           </Alert>
         )}
-        <Stack gap={4} mah="55dvh" mih={100} style={{ overflow: "auto" }} aria-live={page === 1 ? "polite" : "off"}>
+        <Stack
+          gap={0}
+          mah="55dvh"
+          mih={120}
+          className={classes.logOutput}
+          aria-label="Log messages"
+          role="region"
+          tabIndex={0}
+          aria-live={page === 1 ? "polite" : "off"}
+        >
           {logs.isLoading && <Text size="sm">Loading logs…</Text>}
           {!logs.isLoading && !logs.error && !logs.data?.items.length && <Text size="sm">No matching logs</Text>}
           {logs.data?.items.map((log) => (
@@ -160,14 +171,14 @@ export default function LogBrowser({ processId, processIds, refetchInterval }: P
               component="pre"
               m={0}
               c={log.type === "error" ? "red.6" : log.type === "stdout" ? "teal.6" : "blue.5"}
-              style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}
+              className={classes.logLine}
             >
               {new Date(log.timestamp).toLocaleString()} [{log.type}] {log.message}
               {log.messageTruncated ? " [message clipped]" : ""}
             </Text>
           ))}
         </Stack>
-        <Group justify="space-between" wrap="wrap">
+        <Group justify="space-between" wrap="wrap" gap="xs" className={classes.pagination}>
           <Group gap="xs">
             <Button
               size="xs"

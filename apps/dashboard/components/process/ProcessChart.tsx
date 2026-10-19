@@ -1,10 +1,12 @@
 import { AreaChart } from "@mantine/charts";
-import { Flex, SegmentedControl, Stack, Text } from "@mantine/core";
+import { Group, SegmentedControl, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 
 import { formatBytes } from "@/utils/format";
 import { HISTORY_OPTIONS, historyCoverage, type HistoryRange, historyTime } from "@/utils/history";
 import { trpc } from "@/utils/trpc";
+
+import classes from "./Process.module.css";
 
 interface ProcessChartProps {
   processId: string;
@@ -28,8 +30,14 @@ export default function ProcessChart({ processId, refetchInterval }: ProcessChar
   const populated = getStats.data?.points.filter((point) => point.sources > 0).length ?? 0;
 
   return (
-    <Stack gap="xs" w="100%" miw={0}>
+    <Stack gap="sm" w="100%" miw={0} className={classes.chart}>
+      <Group justify="space-between" gap="xs">
+        <Text size="sm" fw={600}>
+          Resource history
+        </Text>
+      </Group>
       <SegmentedControl
+        className={classes.range}
         aria-label="Process history range"
         size="xs"
         fullWidth
@@ -45,11 +53,11 @@ export default function ProcessChart({ processId, refetchInterval }: ProcessChar
             : historyCoverage(populated, getStats.data?.maxPoints ?? 0)}{" "}
         Bucket means · UTC{getStats.data ? ` · ${getStats.data.bucketMs / 1000}s buckets` : ""}
       </Text>
-      <Flex direction={{ base: "column", sm: "row" }} align="center" justify="space-between">
+      <div className={classes.chartGrid}>
         <AreaChart
-          w={{ base: "100%", sm: "50%" }}
+          w={{ base: "100%", xs: "100%", sm: "calc(50% - 8px)" }}
           miw={0}
-          h="150px"
+          h="180px"
           aria-label="Historical memory usage chart"
           pt="0.5em"
           pr="xs"
@@ -69,9 +77,9 @@ export default function ProcessChart({ processId, refetchInterval }: ProcessChar
           areaChartProps={{ syncId: `history-${processId}` }}
         />
         <AreaChart
-          w={{ base: "100%", sm: "50%" }}
+          w={{ base: "100%", xs: "100%", sm: "calc(50% - 8px)" }}
           miw={0}
-          h="150px"
+          h="180px"
           aria-label="Historical CPU usage chart"
           pt="0.5em"
           pr="xs"
@@ -87,7 +95,7 @@ export default function ProcessChart({ processId, refetchInterval }: ProcessChar
           connectNulls={false}
           areaChartProps={{ syncId: `history-${processId}` }}
         />
-      </Flex>
+      </div>
     </Stack>
   );
 }

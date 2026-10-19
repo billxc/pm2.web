@@ -1,0 +1,301 @@
+.card {
+  min-width: 0;
+  padding: 18px;
+  color: var(--ops-text, var(--mantine-color-text));
+  background: var(--ops-surface, var(--mantine-color-body));
+  border: 1px solid var(--ops-border, var(--mantine-color-default-border));
+  border-radius: 14px;
+  box-shadow: 0 2px 8px #00000005;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.interpreter {
+  display: grid;
+  flex: 0 0 42px;
+  height: 42px;
+  place-items: center;
+  background: var(--ops-surface-elevated, var(--mantine-color-default));
+  border: 1px solid var(--ops-border, var(--mantine-color-default-border));
+  border-radius: 11px;
+}
+
+.identity {
+  min-width: 0;
+  flex: 1;
+}
+.name {
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+  color: var(--ops-text);
+}
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--ops-muted, var(--mantine-color-dimmed));
+}
+.statusDot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 16px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 12px 14px;
+  min-width: 0;
+  border: 1px solid var(--ops-border, var(--mantine-color-default-border));
+  border-radius: 10px;
+  background: var(--ops-surface-elevated, var(--mantine-color-default));
+}
+
+.metric {
+  min-width: 0;
+}
+.metricLabel {
+  color: var(--ops-muted, var(--mantine-color-dimmed));
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.metricValue {
+  color: var(--ops-text);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  font-weight: 650;
+}
+.metricTrack {
+  margin-top: 6px;
+}
+.git {
+  grid-column: 1 / -1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.actions {
+  min-width: 0;
+  max-width: 540px;
+}
+.actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.actionButton {
+  min-height: 44px;
+  padding-inline: 12px;
+  border-radius: 9px;
+}
+.detailsButton {
+  color: var(--ops-muted, var(--mantine-color-dimmed));
+}
+.moreMenu {
+  background: var(--ops-surface, var(--mantine-color-body));
+  border-color: var(--ops-border);
+  color: var(--ops-text);
+  max-width: calc(100vw - 24px);
+}
+.moreMenu :global(.mantine-Menu-item) {
+  min-height: 44px;
+  white-space: normal;
+}
+
+.expanded {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  padding-top: 18px;
+  margin-top: 2px;
+  border-top: 1px solid var(--ops-border, var(--mantine-color-default-border));
+  overflow-wrap: anywhere;
+}
+.configuration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.configuration :global(.mantine-Button-root) {
+  min-height: 44px;
+}
+.runtime,
+.chart,
+.logs {
+  min-width: 0;
+  padding: 14px;
+  background: var(--ops-surface, var(--mantine-color-body));
+  border: 1px solid var(--ops-border, var(--mantine-color-default-border));
+  border-radius: 10px;
+  color: var(--ops-text, var(--mantine-color-text));
+}
+.command {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  background: var(--ops-surface-elevated, var(--mantine-color-default));
+  border: 1px solid var(--ops-border, var(--mantine-color-default-border));
+  color: var(--ops-text);
+  padding: 12px;
+  border-radius: 8px;
+}
+.runtimeValue {
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+.copyButton {
+  min-width: 44px;
+  min-height: 44px;
+}
+.range {
+  min-width: 0;
+}
+.range :global(.mantine-SegmentedControl-label) {
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+  padding-inline: 6px;
+}
+.chartGrid {
+  display: flex;
+  gap: 16px;
+}
+
+.logForm {
+  display: grid;
+  gap: 12px;
+}
+.logFilters {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.7fr) repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.logIds {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.logForm :global(.mantine-InputWrapper-root) {
+  min-width: 0;
+}
+.logForm :global(.mantine-Input-input) {
+  min-height: 44px;
+  min-width: 0;
+  background: var(--ops-surface-elevated, var(--mantine-color-default));
+  border-color: var(--ops-border);
+}
+.logForm :global(.mantine-InputWrapper-label) {
+  margin-bottom: 5px;
+  color: var(--ops-muted, var(--mantine-color-dimmed));
+  font-size: 12px;
+}
+.logActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.logActions :global(.mantine-Button-root),
+.pagination :global(.mantine-Button-root) {
+  min-height: 44px;
+}
+.logOutput {
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 12px;
+  border: 1px solid var(--ops-border, var(--mantine-color-default-border));
+  border-radius: 8px;
+  background: var(--ops-bg, var(--mantine-color-body));
+}
+.logLine {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 12px;
+  line-height: 1.75;
+  padding-block: 4px;
+  border-bottom: 1px solid var(--ops-border, var(--mantine-color-default-border));
+}
+.logLine:last-child {
+  border-bottom: 0;
+}
+
+@media (min-width: 1200px) {
+  .metrics {
+    min-width: 380px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .summary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 48em) {
+  .chartGrid {
+    flex-direction: column;
+  }
+  .logFilters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+  .metrics {
+    gap: 10px;
+    padding: 12px 10px;
+  }
+  .metricValue {
+    font-size: 12px;
+  }
+  .actionButtons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .actionButton {
+    width: 100%;
+    padding-inline: 10px;
+  }
+  .runtime,
+  .chart,
+  .logs {
+    padding: 12px;
+  }
+  .logFilters,
+  .logIds {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .logActions > * {
+    flex: 1 1 140px;
+  }
+  .range :global(.mantine-SegmentedControl-label) {
+    font-size: 11px;
+    padding-inline: 4px;
+  }
+}

@@ -1,6 +1,7 @@
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/charts/styles.css";
+import "../styles/globals.css";
 
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
@@ -15,7 +16,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <>
       <SessionProvider session={pageProps.session}>
-        <MantineProvider>
+        <MantineProvider theme={theme} defaultColorScheme="auto">
           <Notifications />
           <Component {...pageProps} />
         </MantineProvider>

@@ -2,6 +2,36 @@ import { ActionIcon, Card, Code, CopyButton, Group, SimpleGrid, Stack, Text, Too
 import { IProcessRuntime } from "@pm2.web/typings";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 
+import classes from "./Process.module.css";
+
+function CopyRuntimeValue({ value, label }: { value: string; label: string }) {
+  return (
+    <CopyButton value={value}>
+      {({ copied, copy }) => (
+        <Tooltip label={copied ? "Copied" : `Copy ${label}`}>
+          <ActionIcon
+            className={classes.copyButton}
+            variant="subtle"
+            color={copied ? "teal" : "gray"}
+            onClick={() => {
+              if (navigator.clipboard) return copy();
+              const input = document.createElement("textarea");
+              input.value = value;
+              document.body.append(input);
+              input.select();
+              document.execCommand("copy");
+              input.remove();
+            }}
+            aria-label={copied ? "Copied" : `Copy ${label}`}
+          >
+            {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+          </ActionIcon>
+        </Tooltip>
+      )}
+    </CopyButton>
+  );
+}
+
 export default function ProcessRuntimeDetails({ runtime }: { runtime?: IProcessRuntime }) {
   const details = [
     ["Script", runtime?.script],
@@ -15,7 +45,7 @@ export default function ProcessRuntimeDetails({ runtime }: { runtime?: IProcessR
   ];
 
   return (
-    <Card radius="md" p="sm" m="xs" withBorder>
+    <Card className={classes.runtime}>
       <Stack gap="xs">
         <Text size="sm" fw={600}>
           PM2 launch configuration
@@ -26,34 +56,9 @@ export default function ProcessRuntimeDetails({ runtime }: { runtime?: IProcessR
               <Text size="xs" c="dimmed">
                 PM2 command ({runtime.platform === "win32" ? "PowerShell" : "shell"})
               </Text>
-              {runtime.command && (
-                <CopyButton value={runtime.command}>
-                  {({ copied, copy }) => (
-                    <Tooltip label={copied ? "Copied" : "Copy PM2 command"}>
-                      <ActionIcon
-                        variant="subtle"
-                        color={copied ? "teal" : "gray"}
-                        size="sm"
-                        onClick={() => {
-                          if (navigator.clipboard) return copy();
-                          // The LAN deployment uses HTTP, where Clipboard API is unavailable.
-                          const input = document.createElement("textarea");
-                          input.value = runtime.command!;
-                          document.body.append(input);
-                          input.select();
-                          document.execCommand("copy");
-                          input.remove();
-                        }}
-                        aria-label={copied ? "Copied" : "Copy PM2 command"}
-                      >
-                        {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
-                </CopyButton>
-              )}
+              {runtime.command && <CopyRuntimeValue value={runtime.command} label="PM2 command" />}
             </Group>
-            <Code block style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+            <Code block className={classes.command}>
               {runtime.command || "—"}
             </Code>
             <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="xs" verticalSpacing="xs">
@@ -62,9 +67,14 @@ export default function ProcessRuntimeDetails({ runtime }: { runtime?: IProcessR
                   <Text size="xs" c="dimmed">
                     {label}
                   </Text>
-                  <Text size="sm" style={{ overflowWrap: "anywhere" }}>
-                    {value ?? "—"}
-                  </Text>
+                  <Group gap="xs" wrap="nowrap" align="flex-start">
+                    <Text size="sm" className={classes.runtimeValue} style={{ flex: 1, minWidth: 0 }}>
+                      {value ?? "—"}
+                    </Text>
+                    {(label === "Script" || label === "Working directory (cwd)") &&
+                      typeof value === "string" &&
+                      value && <CopyRuntimeValue value={value} label={label} />}
+                  </Group>
                 </Stack>
               ))}
             </SimpleGrid>

@@ -1,7 +1,8 @@
-import { Alert, Button, Card, Checkbox, Group, NumberInput, PasswordInput, Stack, Text, Title } from "@mantine/core";
+import { Alert, Button, Card, Checkbox, NumberInput, PasswordInput, Stack, Text, Title } from "@mantine/core";
 import type { AlertConfigView } from "@pm2.web/typings";
 import { useState } from "react";
 
+import styles from "@/pages/PageVisuals.module.css";
 import { trpc } from "@/utils/trpc";
 
 function ConfigurationForm({ config }: { config: AlertConfigView }) {
@@ -33,7 +34,7 @@ function ConfigurationForm({ config }: { config: AlertConfigView }) {
       }}
     >
       <Stack>
-        <Group grow align="start">
+        <div className={styles.thresholds}>
           <NumberInput
             label="主机离线阈值（秒）"
             min={10}
@@ -61,7 +62,7 @@ function ConfigurationForm({ config }: { config: AlertConfigView }) {
             onChange={(v) => setWindow(Number(v))}
             required
           />
-        </Group>
+        </div>
         <Text size="sm">
           默认只显示面板告警。Webhook {config.webhookConfigured ? "已配置（地址隐藏）" : "未配置，禁用"}
           。保存配置不会发送测试消息。
@@ -79,7 +80,7 @@ function ConfigurationForm({ config }: { config: AlertConfigView }) {
           disabled={clear}
           onChange={(e) => setUrl(e.currentTarget.value)}
         />
-        <Text size="xs" c="dimmed">
+        <Text size="xs" className={styles.muted}>
           仅 HTTP(S)，不允许 URL 用户密码或片段。推荐 HTTPS。可访问内网，仅应配置管理员信任的目标；地址不会从 API 返回。
         </Text>
         <Checkbox
@@ -111,9 +112,11 @@ function ConfigurationForm({ config }: { config: AlertConfigView }) {
 export function AlertConfiguration() {
   const query = trpc.alerts.getConfig.useQuery(undefined, { refetchOnWindowFocus: false });
   return (
-    <Card withBorder>
+    <Card className={styles.configuration}>
       <Stack>
-        <Title order={3}>告警配置（管理员 / 所有者）</Title>
+        <Title order={3} size="sm">
+          阈值与通知
+        </Title>
         {query.isError && <Alert color="red">无法读取告警配置。</Alert>}
         {query.data && <ConfigurationForm key={JSON.stringify(query.data)} config={query.data} />}
       </Stack>

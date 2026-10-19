@@ -1,0 +1,184 @@
+.page {
+  color: var(--ops-text);
+  min-width: 0;
+  gap: 1rem;
+}
+
+.summary {
+  gap: 0.625rem;
+}
+
+.stat,
+.chart,
+.secondary,
+.record,
+.empty {
+  min-width: 0;
+  background: var(--ops-surface);
+  border: 1px solid var(--ops-border);
+  color: var(--ops-text);
+  box-shadow: none;
+}
+
+.stat {
+  padding: 0.75rem;
+}
+
+.statContent {
+  min-width: 0;
+  flex: 1;
+}
+
+.statLabel {
+  color: var(--ops-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  min-height: 2.8em;
+}
+
+.statValue {
+  font-size: 1.625rem;
+  font-weight: 750;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.statIcon {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  background: var(--ops-accent-soft);
+  color: var(--ops-accent);
+}
+
+.statIcon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.muted {
+  color: var(--ops-muted);
+}
+
+.chart {
+  padding: 0.75rem;
+}
+
+.chartHeading {
+  margin-bottom: 0.5rem;
+}
+
+.filter {
+  width: 100%;
+  max-width: 26rem;
+}
+
+.secondary {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.disclosure {
+  min-height: 2.75rem;
+  color: var(--ops-text);
+  font-weight: 600;
+}
+
+.disclosure:hover {
+  background: var(--ops-accent-soft);
+}
+
+.disclosure:focus-visible {
+  outline: 2px solid var(--ops-accent);
+  outline-offset: -3px;
+}
+
+.configuration {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ops-text);
+}
+
+.thresholds {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.thresholds > * {
+  min-width: 0;
+}
+
+.record {
+  padding: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.recordHeader {
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.recordAction {
+  flex: 1;
+  min-width: 0;
+}
+
+.recordStatus {
+  flex-shrink: 0;
+}
+
+.recordMeta {
+  color: var(--ops-muted);
+  line-height: 1.6;
+}
+
+.recordResult {
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--ops-border);
+  line-height: 1.6;
+}
+
+.empty {
+  padding: 1rem;
+  border-style: dashed;
+  border-radius: 0.5rem;
+}
+
+@media (min-width: 48em) {
+  .page {
+    gap: 1.25rem;
+  }
+
+  .summary {
+    gap: 1rem;
+  }
+
+  .stat {
+    padding: 1rem;
+  }
+
+  .statLabel {
+    font-size: 0.75rem;
+  }
+
+  .statValue {
+    font-size: 2rem;
+  }
+
+  .statIcon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .chart {
+    padding: 1.25rem;
+  }
+
+  .thresholds {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

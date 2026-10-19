@@ -1,4 +1,4 @@
-import { Group, Indicator, Text } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { IProcess } from "@pm2.web/typings";
 import {
   IconBrandCSharp,
@@ -12,12 +12,16 @@ import {
 } from "@tabler/icons-react";
 import { useCallback } from "react";
 
+import classes from "./Process.module.css";
+
 export default function ProcessHeader({
   statusColor,
+  status,
   interpreter,
   name,
 }: {
   statusColor?: string;
+  status: IProcess["status"];
   interpreter: IProcess["type"];
   name: string;
 }) {
@@ -54,20 +58,21 @@ export default function ProcessHeader({
   }, [interpreter]);
 
   return (
-    <Group align="center" gap="sm" wrap="nowrap" miw={0} maw="100%">
-      <Indicator
-        color={statusColor || "gray"}
-        position="bottom-end"
-        size={10}
-        offset={5}
-        zIndex={1}
-        style={{ flexShrink: 0 }}
-      >
+    <div className={classes.header}>
+      <div className={classes.interpreter} aria-hidden="true">
         <InterpreterIcon />
-      </Indicator>
-      <Text size="xl" fw={600} style={{ overflowWrap: "anywhere", minWidth: 0 }}>
-        {name}
-      </Text>
-    </Group>
+      </div>
+      <div className={classes.identity}>
+        <Text size="lg" fw={650} className={classes.name}>
+          {name}
+        </Text>
+        <div className={classes.status}>
+          <span className={classes.statusDot} style={{ background: statusColor || "gray" }} aria-hidden="true" />
+          <span>{status}</span>
+          <span aria-hidden="true">·</span>
+          <span>{interpreter}</span>
+        </div>
+      </div>
+    </div>
   );
 }

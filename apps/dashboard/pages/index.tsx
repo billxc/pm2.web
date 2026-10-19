@@ -10,13 +10,14 @@ import { useState } from "react";
 import { SelectedProvider, useSelected } from "@/components/context/SelectedProvider";
 import DashboardLog from "@/components/dashboard/DashboardLog";
 import { Dashboard } from "@/components/layouts/Dashboard";
+import styles from "@/pages/PageVisuals.module.css";
 import { getServerSideHelpers } from "@/server/helpers";
 import { formatBytes } from "@/utils/format";
 import { HISTORY_OPTIONS, historyCoverage, type HistoryRange, historyTime } from "@/utils/history";
 import { trpc } from "@/utils/trpc";
 
 const statChartProps = {
-  h: "300px",
+  h: { base: 230, sm: 280 },
   withLegend: true,
   withGradient: true,
   withDots: false,
@@ -48,82 +49,58 @@ function Home({ settings }: { settings: ISetting }) {
   const onlineCount = selectedProcesses.filter((p) => p.status == "online").length;
 
   return (
-    <Stack gap="xl" flex={1}>
-      <Group justify="space-between" align="center">
-        <Title order={2}>System Overview</Title>
-      </Group>
-
-      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
-        <Paper p="xl" radius="md" shadow="sm">
-          <Group justify="space-between" align="flex-start" wrap="nowrap">
-            <div>
-              <Text c="dimmed" tt="uppercase" fw={700} size="xs">
-                Total Servers
-              </Text>
-              <Text fw={900} size="2.5rem">
-                {selectedServers.length}
-              </Text>
+    <Stack className={styles.page} flex={1}>
+      <SimpleGrid cols={{ base: 2, md: 4 }} className={styles.summary}>
+        <Paper className={styles.stat} radius="md">
+          <Group justify="space-between" align="flex-start" wrap="nowrap" gap="xs">
+            <div className={styles.statContent}>
+              <Text className={styles.statLabel}>Total Servers</Text>
+              <Text className={styles.statValue}>{selectedServers.length}</Text>
             </div>
-            <ThemeIcon color="cyan" variant="light" size={48} radius="md">
-              <IconServer size="1.8rem" />
+            <ThemeIcon className={styles.statIcon} variant="light" radius="md" aria-hidden="true">
+              <IconServer />
             </ThemeIcon>
           </Group>
         </Paper>
-
-        <Paper p="xl" radius="md" shadow="sm">
-          <Group justify="space-between" align="flex-start" wrap="nowrap">
-            <div>
-              <Text c="dimmed" tt="uppercase" fw={700} size="xs">
-                Online Processes
-              </Text>
-              <Group align="flex-end" gap="xs" wrap="nowrap">
-                <Text fw={900} size="2.5rem">
-                  {onlineCount}
-                </Text>
-                <Text c="dimmed" pb="sm">
+        <Paper className={styles.stat} radius="md">
+          <Group justify="space-between" align="flex-start" wrap="nowrap" gap="xs">
+            <div className={styles.statContent}>
+              <Text className={styles.statLabel}>Online Processes</Text>
+              <Group align="baseline" gap={4} wrap="nowrap">
+                <Text className={styles.statValue}>{onlineCount}</Text>
+                <Text size="xs" className={styles.muted}>
                   / {selectedProcesses.length}
                 </Text>
               </Group>
             </div>
-            <ThemeIcon
-              color={onlineCount === selectedProcesses.length && onlineCount > 0 ? "teal" : "cyan"}
-              variant="light"
-              size={48}
-              radius="md"
-            >
-              <IconActivity size="1.8rem" />
+            <ThemeIcon className={styles.statIcon} variant="light" radius="md" aria-hidden="true">
+              <IconActivity />
             </ThemeIcon>
           </Group>
         </Paper>
-
-        <Paper p="xl" radius="md" shadow="sm">
-          <Group justify="space-between" align="flex-start" wrap="nowrap">
-            <div>
-              <Text c="dimmed" tt="uppercase" fw={700} size="xs">
-                Mean Server Uptime (live)
-              </Text>
-              <Text fw={900} size="2.5rem" style={{ whiteSpace: "nowrap" }}>
+        <Paper className={styles.stat} radius="md">
+          <Group justify="space-between" align="flex-start" wrap="nowrap" gap="xs">
+            <div className={styles.statContent}>
+              <Text className={styles.statLabel}>Mean Server Uptime (live)</Text>
+              <Text className={styles.statValue}>
                 {latest.data?.server?.uptime == null ? "—" : ms(latest.data.server.uptime)}
               </Text>
             </div>
-            <ThemeIcon color="violet" variant="light" size={48} radius="md">
-              <IconClockHour4 size="1.8rem" />
+            <ThemeIcon className={styles.statIcon} variant="light" radius="md" aria-hidden="true">
+              <IconClockHour4 />
             </ThemeIcon>
           </Group>
         </Paper>
-
-        <Paper p="xl" radius="md" shadow="sm">
-          <Group justify="space-between" align="flex-start" wrap="nowrap">
-            <div>
-              <Text c="dimmed" tt="uppercase" fw={700} size="xs">
-                Mean Process Uptime (live)
-              </Text>
-              <Text fw={900} size="2.5rem" style={{ whiteSpace: "nowrap" }}>
+        <Paper className={styles.stat} radius="md">
+          <Group justify="space-between" align="flex-start" wrap="nowrap" gap="xs">
+            <div className={styles.statContent}>
+              <Text className={styles.statLabel}>Mean Process Uptime (live)</Text>
+              <Text className={styles.statValue}>
                 {latest.data?.process?.uptime == null ? "—" : ms(latest.data.process.uptime)}
               </Text>
             </div>
-            <ThemeIcon color="grape" variant="light" size={48} radius="md">
-              <IconActivity size="1.8rem" />
+            <ThemeIcon className={styles.statIcon} variant="light" radius="md" aria-hidden="true">
+              <IconActivity />
             </ThemeIcon>
           </Group>
         </Paper>
@@ -131,7 +108,9 @@ function Home({ settings }: { settings: ISetting }) {
 
       <Stack gap="xs" miw={0}>
         <Group justify="space-between" wrap="wrap">
-          <Title order={3}>Resource History</Title>
+          <Title order={2} size="h4">
+            Resource History
+          </Title>
           <SegmentedControl
             aria-label="Overview history range"
             size="xs"
@@ -141,12 +120,11 @@ function Home({ settings }: { settings: ISetting }) {
             onChange={(value) => setRange(value as HistoryRange)}
           />
         </Group>
-        <Text size="sm" c="dimmed">
-          Mean per reporting process / server, not fleet totals. Equal weight per source after averaging within each
-          bucket. UTC{history.data ? ` · ${history.data.bucketMs / 1000}s buckets` : ""}. Only authorized monitoring
-          sources are included.
+        <Text size="xs" className={styles.muted}>
+          Per-source mean, not fleet totals · UTC{history.data ? ` · ${history.data.bucketMs / 1000}s buckets` : ""}.
+          Reporting processes / servers are equally weighted after bucket averaging; authorized sources only.
         </Text>
-        <Text size="xs" c="dimmed" role="status">
+        <Text size="xs" className={styles.muted} role="status">
           {history.isError
             ? "History could not be loaded."
             : history.isPending
@@ -157,9 +135,9 @@ function Home({ settings }: { settings: ISetting }) {
         </Text>
       </Stack>
 
-      <SimpleGrid cols={{ base: 1, xl: 2 }} spacing="lg">
-        <Paper p="xl" shadow="sm" radius="md">
-          <Group justify="space-between" mb="lg">
+      <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="md">
+        <Paper className={styles.chart} radius="md">
+          <Group justify="space-between" className={styles.chartHeading}>
             <Text fw={700} size="lg">
               Mean CPU Usage
             </Text>
@@ -180,8 +158,8 @@ function Home({ settings }: { settings: ISetting }) {
           />
         </Paper>
 
-        <Paper p="xl" shadow="sm" radius="md">
-          <Group justify="space-between" mb="lg">
+        <Paper className={styles.chart} radius="md">
+          <Group justify="space-between" className={styles.chartHeading}>
             <Text fw={700} size="lg">
               Mean Memory Usage
             </Text>

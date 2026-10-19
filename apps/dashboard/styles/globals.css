@@ -1,0 +1,140 @@
+:root {
+  --ops-bg: #f3f5fa;
+  --ops-surface: #ffffff;
+  --ops-surface-elevated: #f7f9fc;
+  --ops-border: #e1e7f0;
+  --ops-text: #17233a;
+  --ops-muted: #5b6b82;
+  --ops-accent: #4f46e5;
+  --ops-accent-soft: #eeedff;
+  --ops-success: #0c9b80;
+  --ops-danger: #c92a2a;
+  --mantine-color-body: var(--ops-bg);
+  --mantine-color-text: var(--ops-text);
+  --mantine-color-dimmed: var(--ops-muted);
+  --mantine-color-default: var(--ops-surface);
+  --mantine-color-default-hover: var(--ops-surface-elevated);
+  --mantine-color-default-color: var(--ops-text);
+  --mantine-color-default-border: var(--ops-border);
+}
+
+[data-mantine-color-scheme="dark"] {
+  --ops-bg: #0b1020;
+  --ops-surface: #111a2b;
+  --ops-surface-elevated: #172238;
+  --ops-border: #26334b;
+  --ops-text: #e7edf8;
+  --ops-muted: #93a2ba;
+  --ops-accent: #a5a2ff;
+  --ops-accent-soft: #242445;
+  --ops-success: #40c9a5;
+  --ops-danger: #ff8787;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--ops-bg);
+  color: var(--ops-text);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--ops-accent-soft);
+  color: var(--ops-accent);
+}
+
+.mantine-Title-root {
+  color: var(--ops-text);
+  letter-spacing: -0.035em;
+}
+
+.mantine-Input-input,
+.mantine-PillsInput-input {
+  background: var(--ops-surface);
+  border-color: var(--ops-border);
+  color: var(--ops-text);
+}
+
+.mantine-Input-input::placeholder {
+  color: var(--ops-muted);
+  opacity: 1;
+}
+
+.mantine-AreaChart-root {
+  --chart-text-color: var(--ops-muted);
+  --chart-grid-color: var(--ops-border);
+}
+
+.mantine-Input-label,
+.mantine-InputWrapper-label {
+  color: var(--ops-text);
+  font-weight: 600;
+}
+
+.mantine-Input-description,
+.mantine-InputWrapper-description {
+  color: var(--ops-muted);
+}
+
+.mantine-Modal-title,
+.mantine-Drawer-title {
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.mantine-Modal-content,
+.mantine-Drawer-content,
+.mantine-Menu-dropdown,
+.mantine-Combobox-dropdown {
+  border: 1px solid var(--ops-border);
+  background: var(--ops-surface);
+}
+
+.mantine-Menu-item {
+  min-height: 40px;
+}
+
+.mantine-SegmentedControl-root {
+  background: var(--ops-surface-elevated);
+  border: 1px solid var(--ops-border);
+}
+
+.mantine-Notifications-root {
+  max-width: calc(100vw - 24px);
+}
+
+.mantine-Button-root,
+.mantine-ActionIcon-root,
+a,
+button {
+  touch-action: manipulation;
+}
+
+@media (max-width: 47.99em) {
+  .mantine-Input-input,
+  .mantine-PillsInputField-field {
+    font-size: 16px;
+  }
+
+  .mantine-Menu-item {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

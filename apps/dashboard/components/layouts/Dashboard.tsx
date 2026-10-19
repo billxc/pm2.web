@@ -4,28 +4,21 @@ import { ReactNode } from "react";
 
 import { Head } from "../partials/Head";
 import { Nav } from "../partials/Nav";
+import classes from "./Dashboard.module.css";
 
 export function Dashboard({ children }: { children: ReactNode }) {
   const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] = useDisclosure();
-
   return (
     <AppShell
-      header={{ height: 64 }}
-      navbar={{ width: 80, breakpoint: "sm", collapsed: { mobile: !mobileOpened } }}
-      padding={{ base: "xs", sm: "xl" }}
-      bg="var(--mantine-color-body)"
+      header={{ height: { base: 72, md: 84 } }}
+      navbar={{ width: 240, breakpoint: "md", collapsed: { mobile: true } }}
+      padding={{ base: "md", md: 28 }}
+      className={classes.shell}
     >
       <Head mobileOpened={mobileOpened} toggleMobile={toggleMobile} />
-      <Nav onNavigate={closeMobile} />
-      <AppShell.Main display="flex" style={{ flexDirection: "column", minHeight: "100vh" }}>
-        <Container
-          size="xl"
-          w="100%"
-          px={{ base: 0, sm: "md" }}
-          flex={1}
-          display="flex"
-          style={{ flexDirection: "column", minWidth: 0 }}
-        >
+      <Nav mobileOpened={mobileOpened} onNavigate={closeMobile} />
+      <AppShell.Main className={classes.main}>
+        <Container size={1600} px={0} className={classes.workspace}>
           {children}
         </Container>
       </AppShell.Main>

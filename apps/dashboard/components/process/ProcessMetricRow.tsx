@@ -1,4 +1,4 @@
-import { Group, Progress, Stack, Text, Tooltip } from "@mantine/core";
+import { Group, Progress, Text, Tooltip } from "@mantine/core";
 import { IProcess } from "@pm2.web/typings";
 import { IconCpu, IconDeviceSdCard, IconHistory } from "@tabler/icons-react";
 import ms from "ms";
@@ -6,6 +6,7 @@ import ms from "ms";
 import { formatBytes } from "@/utils/format";
 import { trpc } from "@/utils/trpc";
 
+import classes from "./Process.module.css";
 import ProcessGitMetric from "./ProcessGitMetric";
 
 interface ProcessActionProps {
@@ -26,49 +27,48 @@ export default function ProcessMetricRow({ process, refetchInterval, showMetric 
   const memValue = showMetric ? getStat.data?.memory || 0 : 0;
 
   return (
-    <Group align="center" gap="xl" wrap="wrap" miw={0} style={{ flexGrow: 1 }}>
-      {process?.versioning?.url && <ProcessGitMetric versioning={process.versioning} />}
-
+    <div className={classes.metrics}>
       <Tooltip label={`CPU: ${cpuValue.toFixed(1)}%`}>
-        <Stack gap={4} style={{ width: 120 }}>
-          <Group justify="space-between">
-            <Group gap={4}>
-              <IconCpu size={14} color="gray" />
-              <Text size="xs" fw={700} c="dimmed">
-                CPU
-              </Text>
-            </Group>
-            <Text size="xs" fw={700}>
-              {showMetric ? `${cpuValue.toFixed(0)}%` : "-"}
-            </Text>
+        <div className={classes.metric}>
+          <Group gap={4} wrap="nowrap" className={classes.metricLabel}>
+            <IconCpu size={14} aria-hidden="true" /> CPU
           </Group>
-          <Progress value={Math.min(cpuValue, 100)} color="blue" size="sm" radius="xl" />
-        </Stack>
+          <Text className={classes.metricValue}>{showMetric ? `${cpuValue.toFixed(0)}%` : "-"}</Text>
+          <Progress
+            className={classes.metricTrack}
+            value={Math.min(cpuValue, 100)}
+            color="indigo"
+            size={3}
+            radius="xl"
+          />
+        </div>
       </Tooltip>
-
       <Tooltip label={`RAM: ${formatBytes(memValue)}`}>
-        <Stack gap={4} style={{ width: 120 }}>
-          <Group justify="space-between">
-            <Group gap={4}>
-              <IconDeviceSdCard size={14} color="gray" />
-              <Text size="xs" fw={700} c="dimmed">
-                RAM
-              </Text>
-            </Group>
-            <Text size="xs" fw={700}>
-              {showMetric ? formatBytes(memValue) : "-"}
-            </Text>
+        <div className={classes.metric}>
+          <Group gap={4} wrap="nowrap" className={classes.metricLabel}>
+            <IconDeviceSdCard size={14} aria-hidden="true" /> RAM
           </Group>
-          <Progress value={Math.min((memValue / (1024 * 1024 * 1024)) * 100, 100)} color="teal" size="sm" radius="xl" />
-        </Stack>
+          <Text className={classes.metricValue}>{showMetric ? formatBytes(memValue) : "-"}</Text>
+          <Progress
+            className={classes.metricTrack}
+            value={Math.min((memValue / (1024 * 1024 * 1024)) * 100, 100)}
+            color="teal"
+            size={3}
+            radius="xl"
+          />
+        </div>
       </Tooltip>
-
-      <Group gap={4} wrap="nowrap">
-        <IconHistory size={16} color="gray" />
-        <Text size="sm" fw={700}>
-          {showMetric ? ms(getStat.data?.uptime || 0) : "-"}
-        </Text>
-      </Group>
-    </Group>
+      <div className={classes.metric}>
+        <Group gap={4} wrap="nowrap" className={classes.metricLabel}>
+          <IconHistory size={14} aria-hidden="true" /> UPTIME
+        </Group>
+        <Text className={classes.metricValue}>{showMetric ? ms(getStat.data?.uptime || 0) : "-"}</Text>
+      </div>
+      {process?.versioning?.url && (
+        <div className={classes.git}>
+          <ProcessGitMetric versioning={process.versioning} />
+        </div>
+      )}
+    </div>
   );
 }

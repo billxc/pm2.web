@@ -1,11 +1,13 @@
-import { ActionIcon, Alert, Flex, Stack, Tooltip } from "@mantine/core";
+import { Alert, Button, Menu, Stack } from "@mantine/core";
 import type { IProcess, OperationAction } from "@pm2.web/typings";
 import {
+  IconChevronDown,
+  IconChevronUp,
+  IconDots,
   IconPlayerPlay,
   IconPower,
   IconRefresh,
   IconReload,
-  IconSquareRoundedMinus,
   IconTrash,
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
@@ -16,13 +18,16 @@ import { PERMISSIONS } from "@/utils/permission";
 import { trpc } from "@/utils/trpc";
 
 import { OperationStatus } from "./OperationHistory";
+import classes from "./Process.module.css";
 
 interface ProcessActionProps {
   process: IProcess;
   collapse: () => void;
+  expanded: boolean;
+  detailsId: string;
 }
 
-export default function ProcessAction({ process, collapse }: ProcessActionProps) {
+export default function ProcessAction({ process, collapse, expanded, detailsId }: ProcessActionProps) {
   const { data: session } = useSession();
   const [operationId, setOperationId] = useState<string>();
   const processAction = trpc.operations.enqueue.useMutation({
@@ -62,36 +67,71 @@ export default function ProcessAction({ process, collapse }: ProcessActionProps)
       saveStartup: false,
     });
   }
+  const stateAction = process.status === "online" ? "stop" : "start";
+  const primaryActions = [actions[2], actions[stateAction === "stop" ? 1 : 0]];
+  const moreActions = actions.filter(({ action }) => action !== "restart" && action !== stateAction);
+
   return (
-    <Stack gap="xs" maw={540}>
-      <Flex gap="5px" wrap="wrap">
-        {actions.map(({ action, label, permission, color, Icon }) => (
-          <Tooltip key={action} label={label}>
-            <ActionIcon
-              variant="light"
-              color={color}
-              aria-label={label}
-              radius="sm"
-              size="lg"
-              loading={processAction.isPending && processAction.variables?.action === action}
-              disabled={processAction.isPending || !allowed(permission)}
-              onClick={() => enqueue(action)}
-            >
-              <Icon size="1.4rem" />
-            </ActionIcon>
-          </Tooltip>
+    <Stack gap="xs" className={classes.actions}>
+      <div className={classes.actionButtons}>
+        {primaryActions.map(({ action, label, permission, Icon }) => (
+          <Button
+            key={action}
+            variant={action === "restart" ? "light" : "default"}
+            color="indigo"
+            size="xs"
+            className={classes.actionButton}
+            aria-label={label}
+            leftSection={<Icon size={16} />}
+            loading={processAction.isPending && processAction.variables?.action === action}
+            disabled={processAction.isPending || !allowed(permission)}
+            onClick={() => enqueue(action)}
+          >
+            {action === "restart" ? "Restart" : action === "stop" ? "Stop" : "Start"}
+          </Button>
         ))}
-        <ActionIcon
-          variant="subtle"
+        <Button
+          variant={expanded ? "light" : "subtle"}
           color="gray"
-          radius="sm"
-          size="lg"
+          size="xs"
+          className={`${classes.actionButton} ${classes.detailsButton}`}
           onClick={collapse}
           aria-label="Toggle process details"
+          aria-expanded={expanded}
+          aria-controls={detailsId}
+          rightSection={expanded ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
         >
-          <IconSquareRoundedMinus size="1.2rem" />
-        </ActionIcon>
-      </Flex>
+          Details
+        </Button>
+        <Menu position="bottom-end" withinPortal width={280}>
+          <Menu.Target>
+            <Button
+              variant="subtle"
+              color="gray"
+              size="xs"
+              className={classes.actionButton}
+              aria-label="More process actions"
+              leftSection={<IconDots size={16} />}
+            >
+              More
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown className={classes.moreMenu}>
+            <Menu.Label>Additional actions</Menu.Label>
+            {moreActions.map(({ action, label, permission, color, Icon }) => (
+              <Menu.Item
+                key={action}
+                color={action === "delete" ? "var(--ops-danger)" : undefined}
+                leftSection={<Icon size={16} color={`var(--mantine-color-${color}-6)`} />}
+                disabled={processAction.isPending || !allowed(permission)}
+                onClick={() => enqueue(action)}
+              >
+                {label}
+              </Menu.Item>
+            ))}
+          </Menu.Dropdown>
+        </Menu>
+      </div>
       {processAction.error && <Alert color="red">{processAction.error.message}</Alert>}
       {operationId && <OperationStatus id={operationId} />}
     </Stack>
