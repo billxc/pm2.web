@@ -59,6 +59,8 @@ const processSchema = new mongoose.Schema(
         "stopped",
         "launching",
         "errored",
+        "offline",
+        "waiting restart",
         "one-launch-status",
       ],
     },

@@ -33,7 +33,10 @@ async function main() {
   await createInterval();
 }
 
+// CommonJS entrypoint; exit on startup failure so PM2 can restart the collector.
 // eslint-disable-next-line unicorn/prefer-top-level-await
-(async () => {
-  await main();
-})();
+main().catch((error: unknown) => {
+  console.error("[STARTUP] Failed to initialize collector", error);
+  // eslint-disable-next-line unicorn/no-process-exit
+  process.exit(1);
+});

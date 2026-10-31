@@ -29,6 +29,7 @@ type IProcessStatus =
   | "launching"
   | "errored"
   | "offline"
+  | "waiting restart"
   | "one-launch-status";
 
 interface IProcessRuntime {
